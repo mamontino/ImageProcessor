@@ -1,4 +1,4 @@
-package com.mamontino.imageprocessor.main;
+package com.mamontino.imageprocessor.mvp.main;
 
 import com.mamontino.imageprocessor.di.ActivityScoped;
 import com.mamontino.imageprocessor.di.FragmentScoped;

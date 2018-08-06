@@ -1,7 +1,7 @@
 package com.mamontino.imageprocessor.di;
 
-import com.mamontino.imageprocessor.main.MainActivity;
-import com.mamontino.imageprocessor.main.MainModule;
+import com.mamontino.imageprocessor.mvp.MainActivity;
+import com.mamontino.imageprocessor.mvp.main.MainModule;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;

@@ -1,4 +1,4 @@
-package com.mamontino.imageprocessor.main;
+package com.mamontino.imageprocessor.mvp.main;
 
 import com.mamontino.imageprocessor.BasePresenter;
 import com.mamontino.imageprocessor.BaseView;

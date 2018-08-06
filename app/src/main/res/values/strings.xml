@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">ImageProcessor</string>
+
+    <!--FragmentLoadFromUrl-->
+    <string name="fragment_load_btn_text">Download</string>
+    <string name="fragment_load_url_hint">Enter your url</string>
+    <!--FragmentLoadFromUrl-->
+
+    <!--FragmentMain-->
+    <string name="fragment_main_add_image">Add image</string>
+    <string name="fragment_main_rotate">Rotate</string>
+    <string name="fragment_main_invert_colors">Invert colors</string>
+    <string name="fragment_main_mirror_image">Mirror image</string>
+    <string name="error_empty_url">Empty Url</string>
+    <!--FragmentMain-->
+
 </resources>

@@ -1,4 +1,4 @@
-package com.mamontino.imageprocessor.main;
+package com.mamontino.imageprocessor.mvp.main;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

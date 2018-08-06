@@ -46,6 +46,8 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:$rootProject.rxjavaVersion"
     implementation "io.reactivex.rxjava2:rxandroid:$rootProject.rxandroidVersion"
 
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
 
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'

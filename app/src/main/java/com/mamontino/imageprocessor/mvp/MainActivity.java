@@ -1,8 +1,9 @@
-package com.mamontino.imageprocessor.main;
+package com.mamontino.imageprocessor.mvp;
 
 import android.os.Bundle;
 
 import com.mamontino.imageprocessor.R;
+import com.mamontino.imageprocessor.mvp.main.MainFragment;
 
 import javax.inject.Inject;
 
