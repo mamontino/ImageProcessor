@@ -4,7 +4,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,7 @@ import javax.inject.Inject;
 import dagger.android.support.DaggerFragment;
 
 @ActivityScoped
-public class LoadFragment extends DaggerFragment{
+public class LoadFragment extends DaggerFragment {
 
     private FragmentLoadImageBinding mBinding;
 
@@ -45,13 +44,19 @@ public class LoadFragment extends DaggerFragment{
     private void initViews() {
         mBinding.fragmentLoadBtn.setOnClickListener(v -> {
             String text = mBinding.fragmentLoadEt.getText().toString().trim();
-
-            if (TextUtils.isEmpty(text)) {
-                mBinding.fragmentLoadEt.setHint(R.string.error_empty_url);
+            if (text.isEmpty()) {
+                showError();
                 return;
             }
-
-//            TODO: get url from fragment /  06.18.2018
+            loadImage(text);
         });
+    }
+
+    private void loadImage(String text) {
+//        TODO: get url from fragment /  06.18.2018
+    }
+
+    private void showError() {
+        mBinding.fragmentLoadEt.setHint(R.string.error_empty_url);
     }
 }
