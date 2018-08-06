@@ -27,5 +27,4 @@ final class MainPresenter implements MainContract.Presenter {
     public void destroyView() {
 
     }
-
 }

@@ -7,10 +7,13 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.mamontino.imageprocessor.R;
 import com.mamontino.imageprocessor.databinding.FragmentMainBinding;
 import com.mamontino.imageprocessor.di.ActivityScoped;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
 
@@ -57,5 +60,22 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
 
     private void initViews() {
 //        TODO: Add click's for views / 07.08.2018
+
+    }
+
+    void loadImageFromUrl(String url, ImageView view){
+        Picasso.get().load(url)
+                .placeholder(R.mipmap.ic_launcher)
+                .into(view, new Callback() {
+                    @Override
+                    public void onSuccess() {
+
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+
+                    }
+                });
     }
 }
