@@ -2,7 +2,7 @@ package com.mamontino.imageprocessor.main;
 
 import android.support.annotation.Nullable;
 
-import com.mamontino.imageprocessor.data.source.Repository;
+import com.mamontino.imageprocessor.dat.Repository;
 
 import javax.inject.Inject;
 

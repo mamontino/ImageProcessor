@@ -1,4 +1,4 @@
-package com.mamontino.imageprocessor.Utils.schedulers;
+package com.mamontino.imageprocessor.utils.schedulers;
 
 import android.support.annotation.NonNull;
 

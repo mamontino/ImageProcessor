@@ -3,11 +3,11 @@ package com.mamontino.imageprocessor.di;
 import android.app.Application;
 import android.arch.persistence.room.Room;
 
-import com.mamontino.imageprocessor.data.source.DataSource;
-import com.mamontino.imageprocessor.data.source.db.IPDatabase;
-import com.mamontino.imageprocessor.data.source.db.LocalDataSource;
-import com.mamontino.imageprocessor.data.source.db.UserDao;
-import com.mamontino.imageprocessor.data.source.network.RemoteDataSource;
+import com.mamontino.imageprocessor.dat.DataSource;
+import com.mamontino.imageprocessor.dat.db.IPDatabase;
+import com.mamontino.imageprocessor.dat.db.LocalDataSource;
+import com.mamontino.imageprocessor.dat.db.UserDao;
+import com.mamontino.imageprocessor.dat.network.RemoteDataSource;
 
 
 import javax.inject.Singleton;

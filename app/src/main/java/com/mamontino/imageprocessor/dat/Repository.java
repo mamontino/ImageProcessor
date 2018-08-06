@@ -1,4 +1,4 @@
-package com.mamontino.imageprocessor.data.source;
+package com.mamontino.imageprocessor.dat;
 
 import com.mamontino.imageprocessor.di.Local;
 import com.mamontino.imageprocessor.di.Remote;

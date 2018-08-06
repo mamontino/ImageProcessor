@@ -3,7 +3,7 @@ package com.mamontino.imageprocessor.di;
 import android.app.Application;
 
 import com.mamontino.imageprocessor.IPApplication;
-import com.mamontino.imageprocessor.data.source.Repository;
+import com.mamontino.imageprocessor.dat.Repository;
 
 import dagger.BindsInstance;
 import dagger.Component;

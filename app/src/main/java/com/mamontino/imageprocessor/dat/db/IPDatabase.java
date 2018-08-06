@@ -1,4 +1,4 @@
-package com.mamontino.imageprocessor.data.source.db;
+package com.mamontino.imageprocessor.dat.db;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;

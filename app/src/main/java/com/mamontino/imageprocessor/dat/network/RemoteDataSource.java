@@ -1,6 +1,6 @@
-package com.mamontino.imageprocessor.data.source.network;
+package com.mamontino.imageprocessor.dat.network;
 
-import com.mamontino.imageprocessor.data.source.DataSource;
+import com.mamontino.imageprocessor.dat.DataSource;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

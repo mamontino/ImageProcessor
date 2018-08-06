@@ -1,4 +1,4 @@
-package com.mamontino.imageprocessor.Utils;
+package com.mamontino.imageprocessor.utils;
 
 public interface AppConstants {
 

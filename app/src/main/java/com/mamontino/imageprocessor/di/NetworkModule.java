@@ -5,9 +5,9 @@ import android.app.Application;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.mamontino.imageprocessor.Utils.AppConstants;
-import com.mamontino.imageprocessor.Utils.schedulers.BaseSchedulerProvider;
-import com.mamontino.imageprocessor.Utils.schedulers.SchedulerProvider;
+import com.mamontino.imageprocessor.utils.AppConstants;
+import com.mamontino.imageprocessor.utils.schedulers.BaseSchedulerProvider;
+import com.mamontino.imageprocessor.utils.schedulers.SchedulerProvider;
 
 import javax.inject.Singleton;
 
