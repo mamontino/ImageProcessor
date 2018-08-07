@@ -17,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
 
 import com.mamontino.imageprocessor.R;
+import com.mamontino.imageprocessor.exceptions.SourceNotFoundException;
 import com.mamontino.imageprocessor.mvp.choose.ChooseFragment;
 import com.mamontino.imageprocessor.mvp.load.LoadFragment;
 import com.mamontino.imageprocessor.mvp.main.MainFragment;
@@ -72,9 +73,9 @@ public class MainActivity extends DaggerAppCompatActivity implements ChooseFragm
             showLoadFragment();
         } else if (source == ChooseFragment.REQUEST_CODE_CAMERA) {
             requestCameraPermission();
-        } else {
+        } else if (source == ChooseFragment.REQUEST_CODE_GALLERY) {
             loadPhotoFromGallery();
-        }
+        } else throw new SourceNotFoundException(source + " is not found");
     }
 
     private void showLoadFragment() {
@@ -91,7 +92,7 @@ public class MainActivity extends DaggerAppCompatActivity implements ChooseFragm
                                            @NonNull int[] grantResults) {
         if (requestCode == CAMERA_REQUEST_PERMISSION_CODE) {
             if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                    && grantResults[1] == PackageManager.PERMISSION_GRANTED ) {
+                    && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 Snackbar.make(mCoordinator, R.string.camera_permission_granted,
                         Snackbar.LENGTH_SHORT)
                         .show();
@@ -185,7 +186,7 @@ public class MainActivity extends DaggerAppCompatActivity implements ChooseFragm
         }
     }
 
-    private void galleryAddPic() {
+    private void addPhotoToGallery() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
@@ -193,27 +194,27 @@ public class MainActivity extends DaggerAppCompatActivity implements ChooseFragm
         this.sendBroadcast(mediaScanIntent);
     }
 
-    private void setPic() {
-        // Get the dimensions of the View
-        int targetW = mImageView.getWidth();
-        int targetH = mImageView.getHeight();
-
-        // Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW/targetW, photoH/targetH);
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        bmOptions.inPurgeable = true;
-
-        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-        mImageView.setImageBitmap(bitmap);
-    }
+//    private void setPic() {
+//        // Get the dimensions of the View
+//        int targetW = mImageView.getWidth();
+//        int targetH = mImageView.getHeight();
+//
+//        // Get the dimensions of the bitmap
+//        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+//        bmOptions.inJustDecodeBounds = true;
+//        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+//        int photoW = bmOptions.outWidth;
+//        int photoH = bmOptions.outHeight;
+//
+//        // Determine how much to scale down the image
+//        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+//
+//        // Decode the image file into a Bitmap sized to fill the View
+//        bmOptions.inJustDecodeBounds = false;
+//        bmOptions.inSampleSize = scaleFactor;
+//        bmOptions.inPurgeable = true;
+//
+//        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+//        mImageView.setImageBitmap(bitmap);
+//    }
 }

@@ -20,7 +20,7 @@ import dagger.android.DaggerDialogFragment;
 @ActivityScoped
 public class ChooseFragment extends DaggerDialogFragment {
 
-    public static final int REQUEST_CODE_LOCAL = 1;
+    public static final int REQUEST_CODE_GALLERY = 1;
     public static final int REQUEST_CODE_CAMERA = 2;
     public static final int REQUEST_CODE_URL = 3;
 
@@ -58,7 +58,7 @@ public class ChooseFragment extends DaggerDialogFragment {
         });
 
         mBinding.chooseFragmentBtnLocal.setOnClickListener(v -> {
-            mOnSourceListener.onSourceSelected(REQUEST_CODE_LOCAL);
+            mOnSourceListener.onSourceSelected(REQUEST_CODE_GALLERY);
             this.dismiss();
         });
 
