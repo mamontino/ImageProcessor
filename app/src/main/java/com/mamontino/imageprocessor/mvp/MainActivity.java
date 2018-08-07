@@ -145,6 +145,7 @@ public class MainActivity extends DaggerAppCompatActivity implements ChooseFragm
         File storageDir = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
         mCurrentPhotoPath = image.getAbsolutePath();
+        addPhotoToGallery(mCurrentPhotoPath);
         return image;
     }
 
@@ -161,10 +162,6 @@ public class MainActivity extends DaggerAppCompatActivity implements ChooseFragm
         if (resultCode == RESULT_OK && data != null) {
             switch (requestCode) {
                 case REQUEST_CAMERA_PICTURE:
-                    Bundle extras = data.getExtras();
-                    Bitmap imageBitmap = (Bitmap) extras.get("data");
-                    mMainFragment.setCurrentImage(imageBitmap);
-                    break;
                 case REQUEST_GALLERY_PICTURE:
                     InputStream inputStream = null;
                     try {
@@ -186,9 +183,9 @@ public class MainActivity extends DaggerAppCompatActivity implements ChooseFragm
         }
     }
 
-    private void addPhotoToGallery() {
+    private void addPhotoToGallery(String path) {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(mCurrentPhotoPath);
+        File f = new File(path);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
