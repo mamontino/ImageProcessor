@@ -1,6 +1,5 @@
 package com.mamontino.imageprocessor.base;
 
-public interface BaseInteractor<T> {
+public interface BaseInteractor {
 
-    void getPresenter(T presenter);
 }

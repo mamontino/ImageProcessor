@@ -2,7 +2,7 @@ package com.mamontino.imageprocessor.mvp.main;
 
 import android.support.annotation.Nullable;
 
-import com.mamontino.imageprocessor.source.Repository;
+import java.net.URI;
 
 import javax.inject.Inject;
 
@@ -33,7 +33,7 @@ public final class MainPresenter implements MainContract.Presenter {
     }
 
     @Override
-    public void getImageFromUrl(String url) {
+    public void getImageFromUrl(URI url) {
 
     }
 }

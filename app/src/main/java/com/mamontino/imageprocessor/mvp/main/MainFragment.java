@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.mamontino.imageprocessor.R;
 import com.mamontino.imageprocessor.databinding.FragmentMainBinding;
@@ -22,6 +21,7 @@ import dagger.android.support.DaggerFragment;
 @ActivityScoped
 public class MainFragment extends DaggerFragment implements MainContract.View {
 
+    private boolean hasImage = false;
     private FragmentMainBinding mBinding;
 
     @Inject
@@ -51,53 +51,30 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false);
+
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_main,
+                container, false);
         initViews();
         return mBinding.getRoot();
     }
 
     private void initViews() {
-//        TODO: Add click's for views / 07.08.2018
         mBinding.addImageButton.setOnClickListener(v -> showChooseFragment());
-
-    }
-
-    void getImageFromUrl(String url) {
-       mPresenter.getImageFromUrl(url);
     }
 
     private void showChooseFragment() {
         if (getActivity() != null) {
             mChooseFragment.show(getActivity().getFragmentManager(), mChooseFragment.getTag());
         }
-
     }
 
-    public void loadImage(int source) {
-        switch (source) {
-            case ChooseFragment.REQUEST_CODE_CAMERA:
-                getImageFromCamera();
-                break;
-            case ChooseFragment.REQUEST_CODE_LOCAL:
-                getImageLocal();
-                break;
-        }
-
+    public void loadImageFromUri(String uri) {
+//        mPresenter.getImageFromUrl(uri);
     }
 
-    private void getImageLocal() {
-        Toast.makeText(getContext(), "getImageLocal", Toast.LENGTH_SHORT).show();
-    }
-
-    private void getImageFromCamera() {
-        Toast.makeText(getContext(), "getImageFromCamera", Toast.LENGTH_SHORT).show();
-    }
-
-    public void setImage(Bitmap bitmap) {
-
-    }
-
-    public void loadImageUrl(String url) {
-
+    public void setCurrentImage(Bitmap bitmap) {
+        hasImage = true;
+        mBinding.addImageButton.setVisibility(View.GONE);
+        mBinding.mainImage.setImageBitmap(bitmap);
     }
 }

@@ -19,6 +19,13 @@
     <string name="choose_fragment_load_from_card">load from card</string>
     <string name="choose_fragment_open_camera">open camera</string>
     <string name="choose_fragment_load_from_url">load from url</string>
+    <string name="choose_new_image_message">Choose new image</string>
+    <string name="message_need_take_permissions">Выберите разрешение</string>
+    <string name="ok">OK</string>
+    <string name="camera_permission_granted">Permission granted</string>
+    <string name="camera_permission_denied">Permission denied</string>
+    <string name="camera_access_required">Camera access requared</string>
+    <string name="camera_unavailable">Camera unavailable</string>
     <!--FragmentMain-->
 
 </resources>

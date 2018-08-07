@@ -13,8 +13,4 @@ public final class MainInteractor implements MainInteractorContract {
         mRepository = repository;
     }
 
-    @Override
-    public void getPresenter(Object presenter) {
-        
-    }
 }
