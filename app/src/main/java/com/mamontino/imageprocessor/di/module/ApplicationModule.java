@@ -1,4 +1,4 @@
-package com.mamontino.imageprocessor.di;
+package com.mamontino.imageprocessor.di.module;
 
 import android.app.Application;
 import android.content.Context;

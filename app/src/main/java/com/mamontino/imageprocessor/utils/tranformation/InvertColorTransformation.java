@@ -3,8 +3,6 @@ package com.mamontino.imageprocessor.utils.tranformation;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
-import com.squareup.picasso.Transformation;
-
 public class InvertColorTransformation implements Transformation {
 
     @Override public Bitmap transform(Bitmap source) {
@@ -28,9 +26,5 @@ public class InvertColorTransformation implements Transformation {
             }
         }
         return bitmap;
-    }
-
-    @Override public String key() {
-        return "InvertColorTransformation()";
     }
 }

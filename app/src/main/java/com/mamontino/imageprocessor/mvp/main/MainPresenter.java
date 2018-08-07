@@ -2,20 +2,20 @@ package com.mamontino.imageprocessor.mvp.main;
 
 import android.support.annotation.Nullable;
 
-import com.mamontino.imageprocessor.dat.Repository;
+import com.mamontino.imageprocessor.source.Repository;
 
 import javax.inject.Inject;
 
-final class MainPresenter implements MainContract.Presenter {
+public final class MainPresenter implements MainContract.Presenter {
 
-    private Repository mRepository;
+    private MainInteractor mInteractor;
 
     @Nullable
     private MainContract.View mMainView;
 
     @Inject
-    MainPresenter(Repository repository) {
-        mRepository = repository;
+    MainPresenter(MainInteractor interactor) {
+        mInteractor = interactor;
     }
 
     @Override
@@ -30,5 +30,10 @@ final class MainPresenter implements MainContract.Presenter {
 
     private int getLongerProcessing(){
        return 5 + (int) (Math.random() * 30);
+    }
+
+    @Override
+    public void getImageFromUrl(String url) {
+
     }
 }

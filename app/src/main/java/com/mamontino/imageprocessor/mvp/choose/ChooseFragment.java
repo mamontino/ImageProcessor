@@ -1,5 +1,6 @@
 package com.mamontino.imageprocessor.mvp.choose;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,7 +11,7 @@ import android.view.ViewGroup;
 
 import com.mamontino.imageprocessor.R;
 import com.mamontino.imageprocessor.databinding.FragmentChooseBinding;
-import com.mamontino.imageprocessor.di.ActivityScoped;
+import com.mamontino.imageprocessor.di.scope.ActivityScoped;
 
 import javax.inject.Inject;
 
@@ -21,6 +22,7 @@ public class ChooseFragment extends DaggerDialogFragment {
 
     public static final int REQUEST_CODE_LOCAL = 1;
     public static final int REQUEST_CODE_CAMERA = 2;
+    public static final int REQUEST_CODE_URL = 3;
 
     private OnSourceListener mOnSourceListener;
     private FragmentChooseBinding mBinding;
@@ -28,6 +30,16 @@ public class ChooseFragment extends DaggerDialogFragment {
     @Inject
     public ChooseFragment() {
 
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try{
+            mOnSourceListener = (OnSourceListener) context;
+        }catch (ClassCastException e){
+            throw new ClassCastException(context.toString() + " must implement OnSourceListener");
+        }
     }
 
     @Nullable
@@ -47,6 +59,11 @@ public class ChooseFragment extends DaggerDialogFragment {
 
         mBinding.chooseFragmentBtnLocal.setOnClickListener(v -> {
             mOnSourceListener.onSourceSelected(REQUEST_CODE_LOCAL);
+            this.dismiss();
+        });
+
+        mBinding.chooseFragmentBtnUrl.setOnClickListener(v -> {
+            mOnSourceListener.onSourceSelected(REQUEST_CODE_URL);
             this.dismiss();
         });
     }

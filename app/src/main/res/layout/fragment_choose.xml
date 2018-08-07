@@ -1,24 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/activity_base_padding"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:padding="@dimen/activity_base_padding">
 
-        <Button
-            android:id="@+id/choose_fragment_btn_local"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:text="load from card"/>
+        <TextView
+            android:id="@+id/choose_fragment_tv_source"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/fragment_choose_select_source"
+            android:textColor="@color/text_black"
+            android:textSize="@dimen/text_size_base" />
 
-        <Button
-            android:id="@+id/choose_fragment_btn_camera"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:text="open camera"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/choose_fragment_tv_source"
+            android:layout_marginTop="@dimen/activity_base_padding"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-    </LinearLayout>
+            <ImageButton
+                android:id="@+id/choose_fragment_btn_local"
+                style="@style/img_button_source"
+                android:layout_marginEnd="@dimen/activity_element_big_padding"
+                android:contentDescription="@string/choose_fragment_load_from_card"
+                app:srcCompat="@drawable/ic_photo_library" />
+
+            <ImageButton
+                android:id="@+id/choose_fragment_btn_url"
+                style="@style/img_button_source"
+                android:contentDescription="@string/choose_fragment_open_camera"
+                app:srcCompat="@drawable/ic_file_download" />
+
+            <ImageButton
+                android:id="@+id/choose_fragment_btn_camera"
+                style="@style/img_button_source"
+                android:layout_marginStart="@dimen/activity_element_big_padding"
+                android:contentDescription="@string/choose_fragment_load_from_url"
+                app:srcCompat="@drawable/ic_camera" />
+
+        </LinearLayout>
+    </RelativeLayout>
 </layout>

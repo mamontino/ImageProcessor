@@ -1,4 +1,4 @@
-package com.mamontino.imageprocessor;
+package com.mamontino.imageprocessor.base;
 
 import com.mamontino.imageprocessor.di.DaggerAppComponent;
 

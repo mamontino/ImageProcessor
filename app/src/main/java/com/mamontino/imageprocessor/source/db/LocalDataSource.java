@@ -1,8 +1,8 @@
-package com.mamontino.imageprocessor.dat.db;
+package com.mamontino.imageprocessor.source.db;
 
 import android.support.annotation.NonNull;
 
-import com.mamontino.imageprocessor.dat.DataSource;
+import com.mamontino.imageprocessor.source.DataSource;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

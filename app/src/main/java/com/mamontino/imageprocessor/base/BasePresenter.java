@@ -1,4 +1,4 @@
-package com.mamontino.imageprocessor;
+package com.mamontino.imageprocessor.base;
 
 public interface BasePresenter<T> {
 

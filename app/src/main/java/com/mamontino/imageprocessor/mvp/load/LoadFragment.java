@@ -1,5 +1,6 @@
 package com.mamontino.imageprocessor.mvp.load;
 
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,19 +11,30 @@ import android.view.ViewGroup;
 
 import com.mamontino.imageprocessor.R;
 import com.mamontino.imageprocessor.databinding.FragmentLoadImageBinding;
-import com.mamontino.imageprocessor.di.ActivityScoped;
+import com.mamontino.imageprocessor.di.scope.ActivityScoped;
 
 import javax.inject.Inject;
 
-import dagger.android.support.DaggerFragment;
+import dagger.android.DaggerDialogFragment;
 
 @ActivityScoped
-public class LoadFragment extends DaggerFragment {
+public class LoadFragment extends DaggerDialogFragment {
 
     private FragmentLoadImageBinding mBinding;
+    private OnUrlListener mOnUrlListener;
 
     @Inject
     public LoadFragment() {
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try{
+            mOnUrlListener = (OnUrlListener) context;
+        }catch (ClassCastException e){
+            throw new ClassCastException(context.toString() + " must implement OnUrlListener");
+        }
     }
 
     @Nullable
@@ -40,17 +52,18 @@ public class LoadFragment extends DaggerFragment {
             String text = mBinding.fragmentLoadEt.getText().toString().trim();
             if (text.isEmpty()) {
                 showError();
-                return;
+            }else {
+                mOnUrlListener.onUrlSelected(text);
+                this.dismiss();
             }
-            loadImage(text);
         });
-    }
-
-    private void loadImage(String url) {
-//        TODO: get url from fragment /  06.18.2018
     }
 
     private void showError() {
         mBinding.fragmentLoadEt.setHint(R.string.error_empty_url);
+    }
+
+    public interface OnUrlListener {
+        void onUrlSelected(String url);
     }
 }

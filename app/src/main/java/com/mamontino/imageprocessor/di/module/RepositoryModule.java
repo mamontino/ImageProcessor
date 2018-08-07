@@ -1,13 +1,15 @@
-package com.mamontino.imageprocessor.di;
+package com.mamontino.imageprocessor.di.module;
 
 import android.app.Application;
 import android.arch.persistence.room.Room;
 
-import com.mamontino.imageprocessor.dat.DataSource;
-import com.mamontino.imageprocessor.dat.db.IPDatabase;
-import com.mamontino.imageprocessor.dat.db.LocalDataSource;
-import com.mamontino.imageprocessor.dat.db.UserDao;
-import com.mamontino.imageprocessor.dat.network.RemoteDataSource;
+import com.mamontino.imageprocessor.di.scope.Local;
+import com.mamontino.imageprocessor.di.scope.Remote;
+import com.mamontino.imageprocessor.source.DataSource;
+import com.mamontino.imageprocessor.source.db.IPDatabase;
+import com.mamontino.imageprocessor.source.db.LocalDataSource;
+import com.mamontino.imageprocessor.source.db.UserDao;
+import com.mamontino.imageprocessor.source.network.RemoteDataSource;
 
 
 import javax.inject.Singleton;

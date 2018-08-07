@@ -1,4 +1,4 @@
-package com.mamontino.imageprocessor.dat.db;
+package com.mamontino.imageprocessor.source.db;
 
 import android.arch.persistence.room.Dao;
 
