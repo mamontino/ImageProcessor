@@ -27,4 +27,8 @@ final class MainPresenter implements MainContract.Presenter {
     public void destroyView() {
 
     }
+
+    private int getLongerProcessing(){
+       return 5 + (int) (Math.random() * 30);
+    }
 }

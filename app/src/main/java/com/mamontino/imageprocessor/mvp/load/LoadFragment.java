@@ -25,12 +25,6 @@ public class LoadFragment extends DaggerFragment {
     public LoadFragment() {
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-    }
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -52,7 +46,7 @@ public class LoadFragment extends DaggerFragment {
         });
     }
 
-    private void loadImage(String text) {
+    private void loadImage(String url) {
 //        TODO: get url from fragment /  06.18.2018
     }
 
