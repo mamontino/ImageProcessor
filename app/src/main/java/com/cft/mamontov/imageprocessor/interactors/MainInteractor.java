@@ -1,6 +1,6 @@
 package com.cft.mamontov.imageprocessor.interactors;
 
-import com.cft.mamontov.imageprocessor.source.Repository;
+import com.cft.mamontov.imageprocessor.data.Repository;
 
 import javax.inject.Inject;
 

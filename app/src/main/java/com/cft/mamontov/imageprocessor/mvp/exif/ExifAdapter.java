@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.cft.mamontov.imageprocessor.R;
-import com.cft.mamontov.imageprocessor.source.models.ExifInformation;
+import com.cft.mamontov.imageprocessor.data.models.ExifInformation;
 import com.cft.mamontov.imageprocessor.databinding.ItemExifBinding;
 
 import java.util.ArrayList;

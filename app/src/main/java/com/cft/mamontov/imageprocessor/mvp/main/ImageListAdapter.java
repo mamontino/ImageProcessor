@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 import com.cft.mamontov.imageprocessor.R;
 import com.cft.mamontov.imageprocessor.databinding.ItemImageBinding;
-import com.cft.mamontov.imageprocessor.source.models.TransformedImage;
+import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +24,7 @@ class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHol
     private static final int FIRST_VIEW_TYPE = 1;
     private static final int SECOND_VIEW_TYPE = 2;
 
+    private MainViewModel mViewModel;
     private Context mContext;
     private List<TransformedImage> mList = new ArrayList<>();
 
@@ -43,9 +44,9 @@ class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHol
         }
     }
 
-    ImageListAdapter(Context context) {
+    ImageListAdapter(Context context, MainViewModel viewModel) {
         this.mContext = context;
-
+        this.mViewModel = viewModel;
     }
 
     @Override
@@ -129,9 +130,9 @@ class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHol
 
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            menu.setHeaderTitle("Select action");
-            MenuItem edit = menu.add(Menu.NONE, 1, 1, "Edit");
-            MenuItem delete = menu.add(Menu.NONE, 2, 2, "Delete");
+            menu.setHeaderTitle(R.string.select_action);
+            MenuItem edit = menu.add(Menu.NONE, 1, 1, R.string.edit);
+            MenuItem delete = menu.add(Menu.NONE, 2, 2, R.string.delete);
             edit.setOnMenuItemClickListener(onEditMenu);
             delete.setOnMenuItemClickListener(onEditMenu);
         }

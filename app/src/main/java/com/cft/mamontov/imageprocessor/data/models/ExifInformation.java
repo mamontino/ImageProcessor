@@ -1,4 +1,4 @@
-package com.cft.mamontov.imageprocessor.source.models;
+package com.cft.mamontov.imageprocessor.data.models;
 
 public class ExifInformation {
 

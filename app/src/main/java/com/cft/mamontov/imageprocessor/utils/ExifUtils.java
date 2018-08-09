@@ -6,7 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.media.ExifInterface;
 import android.util.Log;
 
-import com.cft.mamontov.imageprocessor.source.models.ExifInformation;
+import com.cft.mamontov.imageprocessor.data.models.ExifInformation;
 
 import java.io.Closeable;
 import java.io.File;

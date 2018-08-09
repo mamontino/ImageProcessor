@@ -1,6 +1,7 @@
 package com.cft.mamontov.imageprocessor.mvp.main;
 
 import android.app.ProgressDialog;
+import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -14,10 +15,11 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.cft.mamontov.imageprocessor.R;
+import com.cft.mamontov.imageprocessor.base.IPViewModelFactory;
+import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
 import com.cft.mamontov.imageprocessor.databinding.FragmentMainBinding;
 import com.cft.mamontov.imageprocessor.di.scope.ActivityScoped;
 import com.cft.mamontov.imageprocessor.mvp.choose.ChooseFragment;
-import com.cft.mamontov.imageprocessor.source.models.TransformedImage;
 import com.cft.mamontov.imageprocessor.utils.tranformation.InvertColorTransformation;
 import com.cft.mamontov.imageprocessor.utils.tranformation.MirrorTransformation;
 import com.cft.mamontov.imageprocessor.utils.tranformation.RotateTransformation;
@@ -29,8 +31,7 @@ import javax.inject.Inject;
 import dagger.android.support.DaggerFragment;
 
 @ActivityScoped
-public class MainFragment extends DaggerFragment implements MainContract.View,
-        ImageListAdapter.OnItemClickListener {
+public class MainFragment extends DaggerFragment implements ImageListAdapter.OnItemClickListener {
 
     public static final String TAG = "MainFragment";
 
@@ -41,7 +42,9 @@ public class MainFragment extends DaggerFragment implements MainContract.View,
     private ProgressDialog mProgressDialog;
 
     @Inject
-    MainContract.Presenter mPresenter;
+    IPViewModelFactory mViewModelFactory;
+
+    private MainViewModel mMainViewModel;
 
     @Inject
     ChooseFragment mChooseFragment;
@@ -68,20 +71,8 @@ public class MainFragment extends DaggerFragment implements MainContract.View,
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mMainViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MainViewModel.class);
         registerForContextMenu(mBinding.fragmentMainRv);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mPresenter.initView(this);
-    }
-
-
-    @Override
-    public void onDestroy() {
-        mPresenter.destroyView();
-        super.onDestroy();
     }
 
     private void initViews() {
@@ -109,7 +100,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View,
             showChooseFragment();
             return;
         }
-        mPresenter.transformImage(mCurrentPicture, new RotateTransformation());
+        mMainViewModel.transformImage(mCurrentPicture, new RotateTransformation());
     }
 
     private void mirrorImageClicked() {
@@ -117,7 +108,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View,
             showChooseFragment();
             return;
         }
-        mPresenter.transformImage(mCurrentPicture, new MirrorTransformation());
+        mMainViewModel.transformImage(mCurrentPicture, new MirrorTransformation());
     }
 
     private void invertColorsClicked() {
@@ -125,7 +116,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View,
             showChooseFragment();
             return;
         }
-        mPresenter.transformImage(mCurrentPicture, new InvertColorTransformation());
+        mMainViewModel.transformImage(mCurrentPicture, new InvertColorTransformation());
     }
 
     private void initRecyclerView() {
@@ -133,7 +124,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View,
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mBinding.fragmentMainRv.setLayoutManager(layoutManager);
         mBinding.fragmentMainRv.setItemAnimator(new DefaultItemAnimator());
-        mAdapter = new ImageListAdapter(getContext());
+        mAdapter = new ImageListAdapter(getContext(), mMainViewModel);
         mBinding.fragmentMainRv.setAdapter(mAdapter);
     }
 
@@ -154,24 +145,20 @@ public class MainFragment extends DaggerFragment implements MainContract.View,
         mBinding.mainImage.setImageBitmap(bitmap);
     }
 
-    @Override
     public void showProgressIndicator(boolean b) {
         mAdapter.showProgressIndicator(b);
     }
 
-    @Override
     public void addItems(List<TransformedImage> list) {
         mAdapter.setItems(list);
         mBinding.fragmentMainRv.scrollToPosition(mAdapter.getItemCount() - 1);
     }
 
-    @Override
     public void addItem(TransformedImage picture) {
         mAdapter.addItem(picture);
         mBinding.fragmentMainRv.scrollToPosition(mAdapter.getItemCount() - 1);
     }
 
-    @Override
     public void updateProcessing(int val) {
         mAdapter.updateProcessing(val);
     }

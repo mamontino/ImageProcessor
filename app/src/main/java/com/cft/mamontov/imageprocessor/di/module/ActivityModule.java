@@ -1,7 +1,7 @@
 package com.cft.mamontov.imageprocessor.di.module;
 
 import com.cft.mamontov.imageprocessor.di.scope.ActivityScoped;
-import com.cft.mamontov.imageprocessor.mvp.MainActivity;
+import com.cft.mamontov.imageprocessor.mvp.main.MainActivity;
 
 import dagger.Module;
 import dagger.android.ContributesAndroidInjector;
@@ -10,6 +10,6 @@ import dagger.android.ContributesAndroidInjector;
 public abstract class ActivityModule {
 
     @ActivityScoped
-    @ContributesAndroidInjector(modules = {FragmentModule.class, PresenterModule.class, InteractorModule.class})
+    @ContributesAndroidInjector(modules = {FragmentModule.class, InteractorModule.class})
     abstract MainActivity mainActivity();
 }

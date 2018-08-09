@@ -1,4 +1,4 @@
-package com.cft.mamontov.imageprocessor.mvp;
+package com.cft.mamontov.imageprocessor.mvp.main;
 
 import android.Manifest;
 import android.content.Intent;
@@ -21,7 +21,6 @@ import com.cft.mamontov.imageprocessor.R;
 import com.cft.mamontov.imageprocessor.exceptions.SourceNotFoundException;
 import com.cft.mamontov.imageprocessor.mvp.choose.ChooseFragment;
 import com.cft.mamontov.imageprocessor.mvp.load.LoadFragment;
-import com.cft.mamontov.imageprocessor.mvp.main.MainFragment;
 
 import java.io.File;
 import java.io.FileNotFoundException;

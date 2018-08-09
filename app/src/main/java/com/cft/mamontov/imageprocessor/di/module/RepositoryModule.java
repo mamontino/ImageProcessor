@@ -5,11 +5,11 @@ import android.arch.persistence.room.Room;
 
 import com.cft.mamontov.imageprocessor.di.name.Local;
 import com.cft.mamontov.imageprocessor.di.name.Remote;
-import com.cft.mamontov.imageprocessor.source.DataSource;
-import com.cft.mamontov.imageprocessor.source.db.IPDatabase;
-import com.cft.mamontov.imageprocessor.source.db.LocalDataSource;
-import com.cft.mamontov.imageprocessor.source.db.UserDao;
-import com.cft.mamontov.imageprocessor.source.network.RemoteDataSource;
+import com.cft.mamontov.imageprocessor.data.DataSource;
+import com.cft.mamontov.imageprocessor.data.db.IPDatabase;
+import com.cft.mamontov.imageprocessor.data.db.LocalDataSource;
+import com.cft.mamontov.imageprocessor.data.db.UserDao;
+import com.cft.mamontov.imageprocessor.data.network.RemoteDataSource;
 
 import javax.inject.Singleton;
 

@@ -1,4 +1,4 @@
-package com.cft.mamontov.imageprocessor.source.db;
+package com.cft.mamontov.imageprocessor.data.db;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;

@@ -1,4 +1,4 @@
-package com.cft.mamontov.imageprocessor.source;
+package com.cft.mamontov.imageprocessor.data;
 
 import com.cft.mamontov.imageprocessor.di.name.Local;
 import com.cft.mamontov.imageprocessor.di.name.Remote;

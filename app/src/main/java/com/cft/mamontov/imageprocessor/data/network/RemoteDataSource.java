@@ -1,6 +1,6 @@
-package com.cft.mamontov.imageprocessor.source.network;
+package com.cft.mamontov.imageprocessor.data.network;
 
-import com.cft.mamontov.imageprocessor.source.DataSource;
+import com.cft.mamontov.imageprocessor.data.DataSource;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

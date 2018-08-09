@@ -1,8 +1,8 @@
-package com.cft.mamontov.imageprocessor.source.db;
+package com.cft.mamontov.imageprocessor.data.db;
 
 import android.support.annotation.NonNull;
 
-import com.cft.mamontov.imageprocessor.source.DataSource;
+import com.cft.mamontov.imageprocessor.data.DataSource;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
