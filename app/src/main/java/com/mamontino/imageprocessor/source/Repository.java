@@ -1,7 +1,7 @@
 package com.mamontino.imageprocessor.source;
 
-import com.mamontino.imageprocessor.di.scope.Local;
-import com.mamontino.imageprocessor.di.scope.Remote;
+import com.mamontino.imageprocessor.di.name.Local;
+import com.mamontino.imageprocessor.di.name.Remote;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;

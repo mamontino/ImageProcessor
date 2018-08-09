@@ -26,6 +26,7 @@
     <string name="camera_permission_denied">Permission denied</string>
     <string name="camera_access_required">Camera access requared</string>
     <string name="camera_unavailable">Camera unavailable</string>
+    <string name="fragment_main_exif">EXIF</string>
     <!--FragmentMain-->
 
 </resources>

@@ -1,20 +1,17 @@
-package com.mamontino.imageprocessor.mvp.main;
+package com.mamontino.imageprocessor.source.models;
 
 import android.graphics.Bitmap;
 import android.widget.ProgressBar;
 
-public class TransformedImage {
+import com.mamontino.imageprocessor.utils.Processable;
 
-    private int id;
+public class TransformedImage implements Processable {
+
     private Bitmap bitmap;
     private ProgressBar progressBar;
 
-    public TransformedImage(int id) {
-        this.id = id;
-    }
-
-    public int getId() {
-        return id;
+    public TransformedImage(Bitmap bitmap) {
+        this.bitmap = bitmap;
     }
 
     public Bitmap getBitmap() {
@@ -25,12 +22,14 @@ public class TransformedImage {
         this.bitmap = bitmap;
     }
 
+    @Override
     public void setProgress(int progress) {
         if (progressBar != null) {
             progressBar.setProgress(progress);
         }
     }
 
+    @Override
     public void setProgressBar(ProgressBar progressBar) {
         this.progressBar = progressBar;
         progressBar.setProgress(0);

@@ -1,4 +1,4 @@
-package com.mamontino.imageprocessor.mvp.main;
+package com.mamontino.imageprocessor.interactors;
 
 import com.mamontino.imageprocessor.base.BaseInteractor;
 

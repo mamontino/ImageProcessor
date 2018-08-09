@@ -15,6 +15,7 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
+import android.widget.Toast;
 
 import com.mamontino.imageprocessor.R;
 import com.mamontino.imageprocessor.exceptions.SourceNotFoundException;
@@ -43,7 +44,6 @@ public class MainActivity extends DaggerAppCompatActivity implements ChooseFragm
 
     private CoordinatorLayout mCoordinator;
     private String mCurrentPhotoPath;
-    File photoFile = null;
 
     @Inject
     MainFragment mMainFragment;
@@ -91,12 +91,12 @@ public class MainActivity extends DaggerAppCompatActivity implements ChooseFragm
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         if (requestCode == CAMERA_REQUEST_PERMISSION_CODE) {
-            if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            if (grantResults.length == 3 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                     && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 Snackbar.make(mCoordinator, R.string.camera_permission_granted,
                         Snackbar.LENGTH_SHORT)
                         .show();
-                startCamera();
+                sendCameraIntent();
             } else {
                 Snackbar.make(mCoordinator, R.string.camera_permission_denied,
                         Snackbar.LENGTH_SHORT)
@@ -111,37 +111,46 @@ public class MainActivity extends DaggerAppCompatActivity implements ChooseFragm
             Snackbar.make(mCoordinator, R.string.camera_access_required,
                     Snackbar.LENGTH_INDEFINITE).setAction(R.string.ok, view ->
                     ActivityCompat.requestPermissions(this,
-                            new String[]{Manifest.permission.CAMERA,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            new String[]{
+                                    Manifest.permission.CAMERA,
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE},
                             CAMERA_REQUEST_PERMISSION_CODE)).show();
 
         } else {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
+            ActivityCompat.requestPermissions(this, new String[]{
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE},
                     CAMERA_REQUEST_PERMISSION_CODE);
         }
     }
 
-    private void startCamera() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(this.getPackageManager()) != null) {
+    private void sendCameraIntent() {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        cameraIntent.putExtra( MediaStore.EXTRA_FINISH_ON_COMPLETION, true);
+        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(cameraIntent, REQUEST_CAMERA_PICTURE);
+            File pictureFile = null;
             try {
-                photoFile = createImageFile();
+                pictureFile = createImageFile();
             } catch (IOException ex) {
-                ex.printStackTrace();
+                Toast.makeText(this, "Photo file can't be created, please try again",
+                        Toast.LENGTH_SHORT).show();
+                return;
             }
-            if (photoFile != null) {
+            if (pictureFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.android.fileprovider", photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_CAMERA_PICTURE);
+                        "com.cft.mamontov.fileprovider", pictureFile);
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(cameraIntent, REQUEST_CAMERA_PICTURE);
             }
         }
     }
 
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
+        String imageFileName = "IMAGE_PROCESSOR_" + timeStamp + "_";
         File storageDir = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imageFileName, ".jpg", storageDir);
         mCurrentPhotoPath = image.getAbsolutePath();
@@ -159,9 +168,17 @@ public class MainActivity extends DaggerAppCompatActivity implements ChooseFragm
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && data != null) {
+        if (resultCode == RESULT_OK ) {
             switch (requestCode) {
                 case REQUEST_CAMERA_PICTURE:
+                    File imgFile = new  File(mCurrentPhotoPath);
+                    if(imgFile.exists())            {
+//                        imageView.setImageURI(Uri.fromFile(imgFile));
+                        Toast.makeText(this, "imageView.setImageURI(Uri.fromFile(imgFile))", Toast.LENGTH_SHORT).show();
+                    }else {
+
+                    }
+                    break;
                 case REQUEST_GALLERY_PICTURE:
                     InputStream inputStream = null;
                     try {

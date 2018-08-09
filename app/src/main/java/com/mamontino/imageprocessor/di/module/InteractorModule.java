@@ -1,8 +1,8 @@
 package com.mamontino.imageprocessor.di.module;
 
 import com.mamontino.imageprocessor.di.scope.ActivityScoped;
-import com.mamontino.imageprocessor.mvp.main.MainInteractor;
-import com.mamontino.imageprocessor.mvp.main.MainInteractorContract;
+import com.mamontino.imageprocessor.interactors.MainInteractor;
+import com.mamontino.imageprocessor.interactors.MainInteractorContract;
 
 import dagger.Binds;
 import dagger.Module;

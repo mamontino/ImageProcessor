@@ -5,6 +5,7 @@ import android.app.Application;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mamontino.imageprocessor.di.scope.ActivityScoped;
 import com.mamontino.imageprocessor.utils.AppConstants;
 import com.mamontino.imageprocessor.utils.schedulers.BaseSchedulerProvider;
 import com.mamontino.imageprocessor.utils.schedulers.SchedulerProvider;
@@ -13,6 +14,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.reactivex.disposables.CompositeDisposable;
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;

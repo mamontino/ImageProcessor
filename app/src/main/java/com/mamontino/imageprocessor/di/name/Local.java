@@ -1,4 +1,4 @@
-package com.mamontino.imageprocessor.di.scope;
+package com.mamontino.imageprocessor.di.name;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;

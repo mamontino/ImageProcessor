@@ -3,8 +3,8 @@ package com.mamontino.imageprocessor.di.module;
 import android.app.Application;
 import android.arch.persistence.room.Room;
 
-import com.mamontino.imageprocessor.di.scope.Local;
-import com.mamontino.imageprocessor.di.scope.Remote;
+import com.mamontino.imageprocessor.di.name.Local;
+import com.mamontino.imageprocessor.di.name.Remote;
 import com.mamontino.imageprocessor.source.DataSource;
 import com.mamontino.imageprocessor.source.db.IPDatabase;
 import com.mamontino.imageprocessor.source.db.LocalDataSource;

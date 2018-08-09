@@ -1,4 +1,4 @@
-package com.mamontino.imageprocessor.mvp.main;
+package com.mamontino.imageprocessor.mvp.exif;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -9,53 +9,47 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.mamontino.imageprocessor.R;
+import com.mamontino.imageprocessor.databinding.ItemExifBinding;
 import com.mamontino.imageprocessor.databinding.ItemImageBinding;
+import com.mamontino.imageprocessor.source.models.ExifInformation;
 import com.mamontino.imageprocessor.source.models.TransformedImage;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHolder> {
-
-    private static final int FIRST_VIEW_TYPE = 1;
-    private static final int SECOND_VIEW_TYPE = 2;
+class ExifAdapter extends RecyclerView.Adapter<ExifAdapter.ItemViewHolder> {
 
     private Context mContext;
 
-    private List<TransformedImage> mList = new ArrayList<>();
+    private List<ExifInformation> mList = new ArrayList<>();
 
-    void setItems(List<TransformedImage> items) {
+    void setItems(List<ExifInformation> items) {
         mList.clear();
         mList.addAll(items);
         notifyDataSetChanged();
     }
 
-    void addItem(TransformedImage item) {
+    void addItem(ExifInformation item) {
         mList.add(item);
         notifyDataSetChanged();
     }
 
-    ImageListAdapter(Context context) {
+    ExifAdapter(Context context) {
         this.mContext = context;
 
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return position % 2 == 0 ? FIRST_VIEW_TYPE : SECOND_VIEW_TYPE;
     }
 
     @NonNull
     @Override
     public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         ItemImageBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
-                R.layout.item_image, parent, false);
+                R.layout.item_exif, parent, false);
         return new ItemViewHolder(binding, viewType);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-        TransformedImage data = mList.get(position);
+        ExifInformation data = mList.get(position);
         holder.bind(data);
     }
 
@@ -64,17 +58,9 @@ class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHol
         return mList.size();
     }
 
-    public void showProgressIndicator(boolean b) {
-
-    }
-
-    public void updateProcessing(int val) {
-
-    }
-
     class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        private ItemImageBinding mBinding;
+        private ItemExifBinding mBinding;
         private int mViewType;
 
         ItemViewHolder(ItemImageBinding binding, int viewType) {
@@ -83,15 +69,9 @@ class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHol
             mViewType = viewType;
         }
 
-        void bind(TransformedImage data) {
-
-            if (mViewType == FIRST_VIEW_TYPE) {
-                mBinding.getRoot().setBackgroundColor(mContext.getResources().getColor(R.color.grey));
-            } else {
-                mBinding.getRoot().setBackgroundColor(mContext.getResources().getColor(R.color.white));
-            }
-            mBinding.itemImageIcon.setImageBitmap(data.getBitmap());
-            mBinding.itemImageProgress.setVisibility(View.GONE);
+        void bind(ExifInformation data) {
+            mBinding.itemExifTitle.setText("");
+            mBinding.itemExifDesc.setText("");
         }
     }
 }
