@@ -1,4 +1,4 @@
-package com.cft.mamontov.imageprocessor.mvp.choose;
+package com.cft.mamontov.imageprocessor.presentation.choose;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;

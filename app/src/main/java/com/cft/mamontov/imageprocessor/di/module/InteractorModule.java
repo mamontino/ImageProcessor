@@ -1,8 +1,8 @@
 package com.cft.mamontov.imageprocessor.di.module;
 
 import com.cft.mamontov.imageprocessor.di.scope.ActivityScoped;
-import com.cft.mamontov.imageprocessor.interactors.MainInteractor;
-import com.cft.mamontov.imageprocessor.interactors.MainInteractorContract;
+import com.cft.mamontov.imageprocessor.use_case.IMainInteractor;
+import com.cft.mamontov.imageprocessor.use_case.MainInteractor;
 
 import dagger.Binds;
 import dagger.Module;
@@ -12,5 +12,5 @@ public abstract class InteractorModule{
 
     @ActivityScoped
     @Binds
-    abstract MainInteractorContract mainInteractor(MainInteractor interactor);
+    abstract IMainInteractor mainInteractor(MainInteractor interactor);
 }

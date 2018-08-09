@@ -8,6 +8,8 @@ import com.cft.mamontov.imageprocessor.utils.Processable;
 
 public class TransformedImage implements Processable {
 
+    private int id;
+    private boolean inProgress;
     private Bitmap bitmap;
     private ProgressBar progressBar;
 

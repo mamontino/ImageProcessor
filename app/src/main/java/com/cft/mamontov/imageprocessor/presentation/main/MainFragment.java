@@ -1,4 +1,4 @@
-package com.cft.mamontov.imageprocessor.mvp.main;
+package com.cft.mamontov.imageprocessor.presentation.main;
 
 import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
@@ -15,11 +15,11 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.cft.mamontov.imageprocessor.R;
-import com.cft.mamontov.imageprocessor.base.IPViewModelFactory;
+import com.cft.mamontov.imageprocessor.di.IPViewModelFactory;
 import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
 import com.cft.mamontov.imageprocessor.databinding.FragmentMainBinding;
 import com.cft.mamontov.imageprocessor.di.scope.ActivityScoped;
-import com.cft.mamontov.imageprocessor.mvp.choose.ChooseFragment;
+import com.cft.mamontov.imageprocessor.presentation.choose.ChooseFragment;
 import com.cft.mamontov.imageprocessor.utils.tranformation.InvertColorTransformation;
 import com.cft.mamontov.imageprocessor.utils.tranformation.MirrorTransformation;
 import com.cft.mamontov.imageprocessor.utils.tranformation.RotateTransformation;

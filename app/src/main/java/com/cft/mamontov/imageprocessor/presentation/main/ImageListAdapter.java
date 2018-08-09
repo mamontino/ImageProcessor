@@ -1,4 +1,4 @@
-package com.cft.mamontov.imageprocessor.mvp.main;
+package com.cft.mamontov.imageprocessor.presentation.main;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;

@@ -2,7 +2,7 @@ package com.cft.mamontov.imageprocessor.di;
 
 import android.app.Application;
 
-import com.cft.mamontov.imageprocessor.base.IPApplication;
+import com.cft.mamontov.imageprocessor.IPApplication;
 import com.cft.mamontov.imageprocessor.data.Repository;
 import com.cft.mamontov.imageprocessor.di.module.ActivityModule;
 import com.cft.mamontov.imageprocessor.di.module.ApplicationModule;

@@ -1,10 +1,10 @@
-package com.cft.mamontov.imageprocessor.mvp.main;
+package com.cft.mamontov.imageprocessor.presentation.main;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.graphics.Bitmap;
 
-import com.cft.mamontov.imageprocessor.interactors.MainInteractor;
+import com.cft.mamontov.imageprocessor.use_case.MainInteractor;
 import com.cft.mamontov.imageprocessor.utils.schedulers.BaseSchedulerProvider;
 import com.cft.mamontov.imageprocessor.utils.tranformation.Transformation;
 

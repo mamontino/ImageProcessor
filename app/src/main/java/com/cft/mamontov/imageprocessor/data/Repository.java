@@ -10,7 +10,6 @@ import javax.inject.Singleton;
 public class Repository implements DataSource {
 
     private final DataSource mRemoteDataSource;
-
     private final DataSource mLocalDataSource;
 
     @Inject

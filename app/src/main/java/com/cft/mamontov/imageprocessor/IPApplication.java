@@ -1,4 +1,4 @@
-package com.cft.mamontov.imageprocessor.base;
+package com.cft.mamontov.imageprocessor;
 
 import com.cft.mamontov.imageprocessor.di.DaggerAppComponent;
 

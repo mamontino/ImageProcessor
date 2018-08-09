@@ -3,7 +3,7 @@ package com.cft.mamontov.imageprocessor.di.module;
 import android.arch.lifecycle.ViewModel;
 
 import com.cft.mamontov.imageprocessor.di.name.ViewModelKey;
-import com.cft.mamontov.imageprocessor.mvp.main.MainViewModel;
+import com.cft.mamontov.imageprocessor.presentation.main.MainViewModel;
 
 import dagger.Binds;
 import dagger.Module;

@@ -1,4 +1,4 @@
-package com.cft.mamontov.imageprocessor.mvp.exif;
+package com.cft.mamontov.imageprocessor.presentation.exif;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;

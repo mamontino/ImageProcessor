@@ -1,4 +1,4 @@
-package com.cft.mamontov.imageprocessor.mvp.main;
+package com.cft.mamontov.imageprocessor.presentation.main;
 
 import android.Manifest;
 import android.content.Intent;
@@ -19,8 +19,8 @@ import android.widget.Toast;
 
 import com.cft.mamontov.imageprocessor.R;
 import com.cft.mamontov.imageprocessor.exceptions.SourceNotFoundException;
-import com.cft.mamontov.imageprocessor.mvp.choose.ChooseFragment;
-import com.cft.mamontov.imageprocessor.mvp.load.LoadFragment;
+import com.cft.mamontov.imageprocessor.presentation.choose.ChooseFragment;
+import com.cft.mamontov.imageprocessor.presentation.load.LoadFragment;
 
 import java.io.File;
 import java.io.FileNotFoundException;

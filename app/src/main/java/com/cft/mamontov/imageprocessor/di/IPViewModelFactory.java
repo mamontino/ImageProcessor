@@ -1,4 +1,4 @@
-package com.cft.mamontov.imageprocessor.base;
+package com.cft.mamontov.imageprocessor.di;
 
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
@@ -11,6 +11,7 @@ import javax.inject.Singleton;
 
 @Singleton
 public class IPViewModelFactory implements ViewModelProvider.Factory {
+
     private final Map<Class<? extends ViewModel>,
             Provider<ViewModel>> viewModels;
 
@@ -20,6 +21,7 @@ public class IPViewModelFactory implements ViewModelProvider.Factory {
         this.viewModels = viewModels;
     }
 
+    @SuppressWarnings("all")
     @Override
     public <T extends ViewModel> T create(Class<T> modelClass) {
         Provider<ViewModel> viewModelProvider = viewModels.get(modelClass);
@@ -29,7 +31,6 @@ public class IPViewModelFactory implements ViewModelProvider.Factory {
                     + modelClass
                     + " not found");
         }
-
         return (T) viewModelProvider.get();
     }
 }
