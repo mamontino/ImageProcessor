@@ -2,15 +2,19 @@ package com.cft.mamontov.imageprocessor.mvp.main;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.cft.mamontov.imageprocessor.R;
-import com.cft.mamontov.imageprocessor.source.models.TransformedImage;
 import com.cft.mamontov.imageprocessor.databinding.ItemImageBinding;
+import com.cft.mamontov.imageprocessor.source.models.TransformedImage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,18 +25,22 @@ class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHol
     private static final int SECOND_VIEW_TYPE = 2;
 
     private Context mContext;
-
     private List<TransformedImage> mList = new ArrayList<>();
 
-    void setItems(List<TransformedImage> items) {
-        mList.clear();
-        mList.addAll(items);
-        notifyDataSetChanged();
+    private OnItemClickListener mOnItemClickListener;
+
+    public interface OnItemClickListener {
+        void onItemSelected(int position);
     }
 
-    void addItem(TransformedImage item) {
-        mList.add(item);
-        notifyDataSetChanged();
+    public void setOnItemClickListener(ImageListAdapter.OnItemClickListener onItemClickListener) {
+        this.mOnItemClickListener = onItemClickListener;
+    }
+
+    private void onItemSelected(int position) {
+        if (mOnItemClickListener != null) {
+            mOnItemClickListener.onItemSelected(position);
+        }
     }
 
     ImageListAdapter(Context context) {
@@ -55,13 +63,33 @@ class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHol
 
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
-        TransformedImage data = mList.get(position);
-        holder.bind(data);
+        holder.bind(position);
     }
 
     @Override
     public int getItemCount() {
         return mList.size();
+    }
+
+    void setItems(List<TransformedImage> items) {
+        mList.clear();
+        mList.addAll(items);
+        notifyDataSetChanged();
+    }
+
+    void addItem(TransformedImage item) {
+        mList.add(item);
+        notifyDataSetChanged();
+    }
+
+    public void removeItem(int position) {
+        mList.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position, mList.size());
+    }
+
+    public Bitmap getCurrentItem(int position) {
+        return mList.get(position).getBitmap();
     }
 
     public void showProgressIndicator(boolean b) {
@@ -72,10 +100,11 @@ class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHol
 
     }
 
-    class ItemViewHolder extends RecyclerView.ViewHolder {
+    class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
         private ItemImageBinding mBinding;
         private int mViewType;
+        private int mPosition;
 
         ItemViewHolder(ItemImageBinding binding, int viewType) {
             super(binding.getRoot());
@@ -83,7 +112,10 @@ class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHol
             mViewType = viewType;
         }
 
-        void bind(TransformedImage data) {
+        void bind(int position) {
+
+            mPosition = position;
+            TransformedImage data = mList.get(position);
 
             if (mViewType == FIRST_VIEW_TYPE) {
                 mBinding.getRoot().setBackgroundColor(mContext.getResources().getColor(R.color.grey));
@@ -92,6 +124,29 @@ class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHol
             }
             mBinding.itemImageIcon.setImageBitmap(data.getBitmap());
             mBinding.itemImageProgress.setVisibility(View.GONE);
+            mBinding.getRoot().setOnCreateContextMenuListener(this);
         }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            menu.setHeaderTitle("Select action");
+            MenuItem edit = menu.add(Menu.NONE, 1, 1, "Edit");
+            MenuItem delete = menu.add(Menu.NONE, 2, 2, "Delete");
+            edit.setOnMenuItemClickListener(onEditMenu);
+            delete.setOnMenuItemClickListener(onEditMenu);
+        }
+
+        private final MenuItem.OnMenuItemClickListener onEditMenu = item -> {
+            switch (item.getItemId()) {
+                case 1:
+                    onItemSelected(mPosition);
+                    break;
+                case 2:
+                    removeItem(mPosition);
+                    break;
+            }
+            return true;
+        };
+
     }
 }

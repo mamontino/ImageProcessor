@@ -1,5 +1,6 @@
 package com.cft.mamontov.imageprocessor.mvp.main;
 
+import android.app.ProgressDialog;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -10,15 +11,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.cft.mamontov.imageprocessor.R;
+import com.cft.mamontov.imageprocessor.databinding.FragmentMainBinding;
 import com.cft.mamontov.imageprocessor.di.scope.ActivityScoped;
 import com.cft.mamontov.imageprocessor.mvp.choose.ChooseFragment;
 import com.cft.mamontov.imageprocessor.source.models.TransformedImage;
 import com.cft.mamontov.imageprocessor.utils.tranformation.InvertColorTransformation;
 import com.cft.mamontov.imageprocessor.utils.tranformation.MirrorTransformation;
 import com.cft.mamontov.imageprocessor.utils.tranformation.RotateTransformation;
-import com.cft.mamontov.imageprocessor.databinding.FragmentMainBinding;
 
 import java.util.List;
 
@@ -27,12 +29,16 @@ import javax.inject.Inject;
 import dagger.android.support.DaggerFragment;
 
 @ActivityScoped
-public class MainFragment extends DaggerFragment implements MainContract.View {
+public class MainFragment extends DaggerFragment implements MainContract.View,
+        ImageListAdapter.OnItemClickListener {
+
+    public static final String TAG = "MainFragment";
 
     private boolean hasImage = false;
     private FragmentMainBinding mBinding;
     private ImageListAdapter mAdapter;
     private Bitmap mCurrentPicture = null;
+    private ProgressDialog mProgressDialog;
 
     @Inject
     MainContract.Presenter mPresenter;
@@ -50,6 +56,21 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
         setRetainInstance(true);
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false);
+        initProgressDialog();
+        initViews();
+        return mBinding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        registerForContextMenu(mBinding.fragmentMainRv);
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -63,14 +84,6 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
         super.onDestroy();
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false);
-        initViews();
-        return mBinding.getRoot();
-    }
-
     private void initViews() {
         mBinding.fragmentMainBtnExif.setOnClickListener(v -> showExifFragment());
         mBinding.addImageButton.setOnClickListener(v -> showChooseFragment());
@@ -80,12 +93,19 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
         initRecyclerView();
     }
 
-    private void showExifFragment() {
+    private void initProgressDialog() {
+        mProgressDialog = new ProgressDialog(getContext());
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        mProgressDialog.setMax(100);
+    }
 
+    private void showExifFragment() {
+        Toast.makeText(getContext(), "showExifFragment", Toast.LENGTH_SHORT).show();
     }
 
     private void rotateImageClicked() {
-        if (!hasImage){
+        if (!hasImage) {
             showChooseFragment();
             return;
         }
@@ -93,7 +113,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     }
 
     private void mirrorImageClicked() {
-        if (!hasImage){
+        if (!hasImage) {
             showChooseFragment();
             return;
         }
@@ -101,7 +121,7 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     }
 
     private void invertColorsClicked() {
-        if (!hasImage){
+        if (!hasImage) {
             showChooseFragment();
             return;
         }
@@ -154,5 +174,11 @@ public class MainFragment extends DaggerFragment implements MainContract.View {
     @Override
     public void updateProcessing(int val) {
         mAdapter.updateProcessing(val);
+    }
+
+    @Override
+    public void onItemSelected(int position) {
+        mCurrentPicture = mAdapter.getCurrentItem(position);
+        mBinding.mainImage.setImageBitmap(mCurrentPicture);
     }
 }

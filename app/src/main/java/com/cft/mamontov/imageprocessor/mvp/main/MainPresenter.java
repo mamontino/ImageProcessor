@@ -53,7 +53,7 @@ public final class MainPresenter implements MainContract.Presenter {
     @Override
     public void transformImage(Bitmap bitmap, Transformation transformation) {
         long val = getLongProcessing();
-        mDisposable.add(Observable.intervalRange(0L, val, 1, val / 10, TimeUnit.SECONDS)
+        mDisposable.add(Observable.intervalRange(0L, val, 1, 1, TimeUnit.SECONDS)
                 .subscribeOn(mScheduler.io())
                 .observeOn(mScheduler.ui())
                 .subscribe(v -> mMainView.updateProcessing(v.intValue()),

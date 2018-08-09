@@ -27,6 +27,8 @@
     <string name="camera_access_required">Camera access requared</string>
     <string name="camera_unavailable">Camera unavailable</string>
     <string name="fragment_main_exif">EXIF</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
     <!--FragmentMain-->
 
 </resources>
