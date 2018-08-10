@@ -31,7 +31,7 @@ class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHol
     private OnItemClickListener mOnItemClickListener;
 
     public interface OnItemClickListener {
-        void onItemSelected(int position);
+        void onCurrentPictureChanged(int position);
     }
 
     public void setOnItemClickListener(ImageListAdapter.OnItemClickListener onItemClickListener) {
@@ -40,7 +40,7 @@ class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHol
 
     private void onItemSelected(int position) {
         if (mOnItemClickListener != null) {
-            mOnItemClickListener.onItemSelected(position);
+            mOnItemClickListener.onCurrentPictureChanged(position);
         }
     }
 
@@ -83,7 +83,7 @@ class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHol
         notifyDataSetChanged();
     }
 
-    public void removeItem(int position) {
+    void removeItem(int position) {
         mList.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, mList.size());

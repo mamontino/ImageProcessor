@@ -30,6 +30,7 @@
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="select_action">Select action</string>
+    <string name="error_empty_bitmap">Empty bitmap. Retry again.</string>
     <!--FragmentMain-->
 
 </resources>

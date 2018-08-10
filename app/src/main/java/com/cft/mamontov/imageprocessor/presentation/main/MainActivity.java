@@ -15,9 +15,11 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.cft.mamontov.imageprocessor.R;
+import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
 import com.cft.mamontov.imageprocessor.exceptions.SourceNotFoundException;
 import com.cft.mamontov.imageprocessor.presentation.choose.ChooseFragment;
 import com.cft.mamontov.imageprocessor.presentation.load.LoadFragment;
@@ -64,7 +66,7 @@ public class MainActivity extends DaggerAppCompatActivity implements ChooseFragm
                 .addToBackStack(null)
                 .add(R.id.main_container, mMainFragment)
                 .commit();
-    }
+        }
 
     @Override
     public void onSourceSelected(int source) {
@@ -90,7 +92,7 @@ public class MainActivity extends DaggerAppCompatActivity implements ChooseFragm
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         if (requestCode == CAMERA_REQUEST_PERMISSION_CODE) {
-            if (grantResults.length == 3 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+            if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                     && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 Snackbar.make(mCoordinator, R.string.camera_permission_granted,
                         Snackbar.LENGTH_SHORT)
@@ -112,15 +114,13 @@ public class MainActivity extends DaggerAppCompatActivity implements ChooseFragm
                     ActivityCompat.requestPermissions(this,
                             new String[]{
                                     Manifest.permission.CAMERA,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                    Manifest.permission.READ_EXTERNAL_STORAGE},
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE},
                             CAMERA_REQUEST_PERMISSION_CODE)).show();
 
         } else {
             ActivityCompat.requestPermissions(this, new String[]{
                             Manifest.permission.CAMERA,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.READ_EXTERNAL_STORAGE},
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
                     CAMERA_REQUEST_PERMISSION_CODE);
         }
     }
@@ -163,7 +163,7 @@ public class MainActivity extends DaggerAppCompatActivity implements ChooseFragm
         takeGalleryIntent.setType("image/*");
         startActivityForResult(Intent.createChooser(takeGalleryIntent,
                 getString(R.string.choose_new_image_message)), REQUEST_GALLERY_PICTURE);
-    }
+        }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -188,7 +188,7 @@ public class MainActivity extends DaggerAppCompatActivity implements ChooseFragm
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inSampleSize = 4;
                     Bitmap bitmap = BitmapFactory.decodeStream(inputStream, new Rect(), options);
-                    mMainFragment.setCurrentImage(bitmap);
+                    mMainFragment.setCurrentImage(new TransformedImage(bitmap));
                     try {
                         inputStream.close();
                     } catch (IOException e) {
@@ -207,27 +207,23 @@ public class MainActivity extends DaggerAppCompatActivity implements ChooseFragm
         this.sendBroadcast(mediaScanIntent);
     }
 
-//    private void setPic() {
-//        // Get the dimensions of the View
-//        int targetW = mImageView.getWidth();
-//        int targetH = mImageView.getHeight();
-//
-//        // Get the dimensions of the bitmap
-//        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-//        bmOptions.inJustDecodeBounds = true;
-//        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-//        int photoW = bmOptions.outWidth;
-//        int photoH = bmOptions.outHeight;
-//
-//        // Determine how much to scale down the image
-//        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
-//
-//        // Decode the image file into a Bitmap sized to fill the View
-//        bmOptions.inJustDecodeBounds = false;
-//        bmOptions.inSampleSize = scaleFactor;
-//        bmOptions.inPurgeable = true;
-//
-//        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-//        mImageView.setImageBitmap(bitmap);
-//    }
+    private void setPic(ImageView view) {
+        int targetW = view.getWidth();
+        int targetH = view.getHeight();
+
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+        view.setImageBitmap(bitmap);
+    }
 }
