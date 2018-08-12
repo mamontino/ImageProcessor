@@ -4,8 +4,6 @@ import android.graphics.Bitmap;
 
 import com.cft.mamontov.imageprocessor.data.Repository;
 
-import java.net.URI;
-
 import javax.inject.Inject;
 
 import io.reactivex.Single;
@@ -19,7 +17,7 @@ public final class MainInteractor implements IMainInteractor {
         mRepository = repository;
     }
 
-    public Single<Bitmap> getPictureFromUri(URI url) {
+    public Single<Bitmap> getPictureFromUri(String url) {
         return null;
     }
 }

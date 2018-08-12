@@ -9,4 +9,5 @@
     <dimen name="image_list_size">120dp</dimen>
 
     <dimen name="text_size_base">18sp</dimen>
+    <dimen name="main_image_size">160dp</dimen>
 </resources>

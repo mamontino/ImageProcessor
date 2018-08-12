@@ -2,7 +2,6 @@ package com.cft.mamontov.imageprocessor.presentation.main;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.ContextMenu;
@@ -13,20 +12,19 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.cft.mamontov.imageprocessor.R;
-import com.cft.mamontov.imageprocessor.databinding.ItemImageBinding;
 import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
+import com.cft.mamontov.imageprocessor.databinding.ItemImageBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
-class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHolder> {
+public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHolder> {
 
     private static final int FIRST_VIEW_TYPE = 1;
     private static final int SECOND_VIEW_TYPE = 2;
 
-    private MainViewModel mViewModel;
     private Context mContext;
-    private List<TransformedImage> mList = new ArrayList<>();
+    private List<TransformedImage> mList;
 
     private OnItemClickListener mOnItemClickListener;
 
@@ -44,9 +42,9 @@ class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHol
         }
     }
 
-    ImageListAdapter(Context context, MainViewModel viewModel) {
+    public ImageListAdapter(Context context) {
         this.mContext = context;
-        this.mViewModel = viewModel;
+        this.mList = new ArrayList<>();
     }
 
     @Override
@@ -72,7 +70,7 @@ class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHol
         return mList.size();
     }
 
-    void setItems(List<TransformedImage> items) {
+    void addItems(List<TransformedImage> items) {
         mList.clear();
         mList.addAll(items);
         notifyDataSetChanged();
@@ -83,21 +81,21 @@ class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHol
         notifyDataSetChanged();
     }
 
-    void removeItem(int position) {
+    private void removeItem(int position) {
         mList.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, mList.size());
     }
 
-    public Bitmap getCurrentItem(int position) {
-        return mList.get(position).getBitmap();
+    TransformedImage getCurrentItem(int position) {
+        return mList.get(position);
     }
 
-    public void showProgressIndicator(boolean b) {
+    void showProgressIndicator(boolean b) {
 
     }
 
-    public void updateProcessing(int val) {
+    void updateProcessing(int val) {
 
     }
 
