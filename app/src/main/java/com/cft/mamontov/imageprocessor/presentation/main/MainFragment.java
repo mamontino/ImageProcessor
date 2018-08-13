@@ -30,6 +30,8 @@ import com.cft.mamontov.imageprocessor.di.IPViewModelFactory;
 import com.cft.mamontov.imageprocessor.di.scope.ActivityScoped;
 import com.cft.mamontov.imageprocessor.presentation.choose.ChooseFragment;
 import com.cft.mamontov.imageprocessor.utils.BitmapUtils;
+import com.cft.mamontov.imageprocessor.utils.tranformation.InvertColorTransformation;
+import com.cft.mamontov.imageprocessor.utils.tranformation.MirrorTransformation;
 import com.cft.mamontov.imageprocessor.utils.tranformation.RotateTransformation;
 
 import java.io.File;
@@ -98,6 +100,7 @@ public class MainFragment extends DaggerFragment implements ImageListAdapter.OnI
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_CAMERA_PICTURE:
+//                    Bitmap bitmap = new BitmapUtils().getCompressedBitmap(mViewModel.getCurrentPicturePath());
                     Bitmap bitmap = BitmapUtils.getBitmap(mViewModel.getCurrentPicturePath());
                     bitmap = Bitmap.createScaledBitmap(bitmap, mBinding.imageContainer.getWidth(),
                             mBinding.imageContainer.getHeight(), true);
@@ -144,7 +147,7 @@ public class MainFragment extends DaggerFragment implements ImageListAdapter.OnI
     }
 
     public void loadImage(String uri) {
-        mViewModel.getImageFromUrl(uri);
+        mViewModel.getImageFromUrl(uri, mBinding.mainImage);
     }
 
     private void requestCameraPermission() {
@@ -206,10 +209,10 @@ public class MainFragment extends DaggerFragment implements ImageListAdapter.OnI
                     mViewModel.transformImage(new RotateTransformation());
                     break;
                 case INVERT_COLOR:
-                    mViewModel.transformImage(new RotateTransformation());
+                    mViewModel.transformImage(new InvertColorTransformation());
                     break;
                 case MIRROR_IMAGE:
-                    mViewModel.transformImage(new RotateTransformation());
+                    mViewModel.transformImage(new MirrorTransformation());
                     break;
 
             }

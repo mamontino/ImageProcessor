@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.cft.mamontov.imageprocessor.R;
 import com.cft.mamontov.imageprocessor.databinding.FragmentLoadImageBinding;
+import com.cft.mamontov.imageprocessor.di.DaggerBottomShitDialogFragment;
 
 
 import javax.inject.Inject;
@@ -51,8 +52,8 @@ public class LoadFragment extends DaggerDialogFragment {
             if (text.isEmpty()) {
                 showError();
             }else {
-                mOnUrlListener.onUrlSelected(text);
                 this.dismiss();
+                mOnUrlListener.onUrlSelected(text);
             }
         });
     }

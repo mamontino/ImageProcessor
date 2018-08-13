@@ -12,6 +12,8 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import static android.support.media.ExifInterface.TAG_ARTIST;
 import static android.support.media.ExifInterface.TAG_CAMARA_OWNER_NAME;
@@ -28,9 +30,9 @@ import static android.support.media.ExifInterface.TAG_WHITE_BALANCE;
 
 public class ExifUtils {
 
-    public static ExifInformation getExifInfo(ContentResolver contentResolver, Uri imageUri) {
+    public static Map<String, String> getExifInfo(ContentResolver contentResolver, Uri imageUri) {
 
-        ExifInformation info = new ExifInformation();
+        Map<String, String> exifMap = new HashMap<>();
 
         if (imageUri == null) return null;
 
@@ -53,20 +55,18 @@ public class ExifUtils {
             String exposureTime = exif.getAttribute(ExifInterface.TAG_EXPOSURE_TIME);
             String exposureMode = exif.getAttribute(ExifInterface.TAG_EXPOSURE_MODE);
 
-            info.setArtist(artist);
-            info.setOrientation(orientation);
-            info.setOwner(owner);
-            info.setDate(date);
-            info.setWhiteBalance(whiteBalance);
-            info.setModel(model);
-            info.setLength(length);
-            info.setWidth(width);
-            info.setDescription(description);
-            info.setSource(source);
-            info.setExposureMode(exposureMode);
-            info.setExposureTime(exposureTime);
-
-            return info;
+            exifMap.put(TAG_ARTIST, artist);
+            exifMap.put(TAG_ORIENTATION, orientation);
+            exifMap.put(TAG_CAMARA_OWNER_NAME, owner);
+            exifMap.put(TAG_DATETIME, date);
+            exifMap.put(TAG_WHITE_BALANCE, whiteBalance);
+            exifMap.put(TAG_MODEL, model);
+            exifMap.put(TAG_IMAGE_LENGTH, length);
+            exifMap.put(TAG_IMAGE_WIDTH, width);
+            exifMap.put(TAG_IMAGE_DESCRIPTION, description);
+            exifMap.put(TAG_FILE_SOURCE, source);
+            exifMap.put(TAG_EXPOSURE_TIME, exposureMode);
+            exifMap.put(TAG_EXPOSURE_MODE, exposureTime);
 
         } catch (IOException e) {
             Log.e("Error getting Exif data", e.getMessage());
@@ -74,6 +74,8 @@ public class ExifUtils {
         } finally {
             closeSilently(inputStream);
         }
+
+        return exifMap;
     }
 
     public static boolean copyExifInfo(File sourceFile, File destFile) {

@@ -21,16 +21,28 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                android:layout_weight="1"
-                android:background="@color/colorPrimary">
+                android:layout_weight="1">
+
+            <FrameLayout
+                android:id="@+id/add_image_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
 
                 <ImageButton
                     android:id="@+id/fragment_main_btn_exif"
                     style="@style/img_button_source"
                     android:layout_gravity="top|end"
                     android:contentDescription="@string/fragment_main_exif"
+                    android:visibility="gone"
                     app:srcCompat="@drawable/ic_info" />
+
+                <ImageView
+                    android:id="@+id/main_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerInside" />
+            </FrameLayout>
 
                 <ImageButton
                     android:id="@+id/add_image_button"
@@ -38,12 +50,6 @@
                     android:layout_gravity="center"
                     android:contentDescription="@string/fragment_main_add_image"
                     app:srcCompat="@drawable/ic_add_a_photo" />
-
-                <ImageView
-                    android:id="@+id/main_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerInside" />
             </FrameLayout>
 
             <RelativeLayout

@@ -46,6 +46,8 @@ dependencies {
     implementation "com.android.support:design:$rootProject.supportLibraryVersion"
     implementation "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:support-v4:$rootProject.supportLibraryVersion"
+    //    Image loader
+    implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
     //    ViewModel
     implementation "android.arch.lifecycle:extensions:$rootProject.lifecycle_version"
     implementation "android.arch.lifecycle:viewmodel:$rootProject.lifecycle_version"

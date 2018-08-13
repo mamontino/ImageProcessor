@@ -1,79 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/buttons_block"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center"
+            android:orientation="horizontal"
             android:padding="@dimen/activity_horizontal_margin">
 
             <FrameLayout
                 android:id="@+id/image_container"
-                android:layout_width="@dimen/main_image_size"
-                android:layout_height="@dimen/main_image_size"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                android:background="@color/colorPrimary">
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1">
 
-                <ImageButton
-                    android:id="@+id/fragment_main_btn_exif"
-                    style="@style/img_button_source"
-                    android:layout_gravity="top|end"
-                    android:contentDescription="@string/fragment_main_exif"
-                    app:srcCompat="@drawable/ic_info"/>
+                <FrameLayout
+                    android:id="@+id/add_image_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+
+                    <ImageButton
+                        android:id="@+id/fragment_main_btn_exif"
+                        style="@style/img_button_source"
+                        android:layout_gravity="top|end"
+                        android:contentDescription="@string/fragment_main_exif"
+                        android:visibility="gone"
+                        app:srcCompat="@drawable/ic_info" />
+
+                    <ImageView
+                        android:id="@+id/main_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerInside" />
+                </FrameLayout>
 
                 <ImageButton
                     android:id="@+id/add_image_button"
                     style="@style/img_button_source"
                     android:layout_gravity="center"
                     android:contentDescription="@string/fragment_main_add_image"
-                    app:srcCompat="@drawable/ic_add_a_photo"/>
-
-                <ImageView
-                    android:id="@+id/main_image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"/>
+                    app:srcCompat="@drawable/ic_add_a_photo" />
             </FrameLayout>
 
-            <Button
-                android:id="@+id/fragment_main_btn_rotate"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/fragment_main_btn_invert_colors"
-                android:layout_toEndOf="@+id/image_container"
-                android:text="@string/fragment_main_rotate"/>
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/activity_horizontal_margin">
 
-            <Button
-                android:id="@+id/fragment_main_btn_invert_colors"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toEndOf="@+id/image_container"
-                android:text="@string/fragment_main_invert_colors"/>
+                <Button
+                    android:id="@+id/fragment_main_btn_rotate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/fragment_main_btn_invert_colors"
+                    android:text="@string/fragment_main_rotate" />
 
-            <Button
-                android:id="@+id/fragment_main_btn_mirror_image"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/fragment_main_btn_invert_colors"
-                android:layout_toEndOf="@+id/image_container"
-                android:text="@string/fragment_main_mirror_image"/>
-        </RelativeLayout>
+                <Button
+                    android:id="@+id/fragment_main_btn_invert_colors"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="@string/fragment_main_invert_colors" />
+
+                <Button
+                    android:id="@+id/fragment_main_btn_mirror_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/fragment_main_btn_invert_colors"
+                    android:text="@string/fragment_main_mirror_image" />
+            </RelativeLayout>
+        </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/fragment_main_rv"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"/>
+            android:layout_weight="1" />
 
     </LinearLayout>
 </layout>

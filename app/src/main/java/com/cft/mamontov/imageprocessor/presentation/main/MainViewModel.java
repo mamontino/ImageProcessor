@@ -4,11 +4,14 @@ import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.graphics.Bitmap;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
 import com.cft.mamontov.imageprocessor.use_case.MainInteractor;
 import com.cft.mamontov.imageprocessor.utils.schedulers.BaseSchedulerProvider;
 import com.cft.mamontov.imageprocessor.utils.tranformation.Transformation;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,11 +90,8 @@ public class MainViewModel extends ViewModel {
         mList.remove(position);
     }
 
-    public void getImageFromUrl(String url) {
-        mDisposable.add(mInteractor.getPictureFromUri(url)
-                .subscribeOn(mScheduler.io())
-                .observeOn(mScheduler.ui())
-                .subscribe(this::onImageLoaded, Throwable::printStackTrace));
+    public void getImageFromUrl(String url, ImageView view) {
+       Picasso.get().load(url).into(view);
     }
 
     private void onImageLoaded(Bitmap bitmap) {

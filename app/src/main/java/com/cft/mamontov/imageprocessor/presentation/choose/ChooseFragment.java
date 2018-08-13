@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.cft.mamontov.imageprocessor.databinding.FragmentChooseBinding;
 
 import com.cft.mamontov.imageprocessor.R;
+import com.cft.mamontov.imageprocessor.di.DaggerBottomShitDialogFragment;
 
 import javax.inject.Inject;
 
@@ -52,18 +53,18 @@ public class ChooseFragment extends DaggerDialogFragment {
 
     private void initViews() {
         mBinding.chooseFragmentBtnCamera.setOnClickListener(v -> {
-            mOnSourceListener.onSourceSelected(REQUEST_CODE_CAMERA);
             this.dismiss();
+            mOnSourceListener.onSourceSelected(REQUEST_CODE_CAMERA);
         });
 
         mBinding.chooseFragmentBtnLocal.setOnClickListener(v -> {
-            mOnSourceListener.onSourceSelected(REQUEST_CODE_GALLERY);
             this.dismiss();
+            mOnSourceListener.onSourceSelected(REQUEST_CODE_GALLERY);
         });
 
         mBinding.chooseFragmentBtnUrl.setOnClickListener(v -> {
-            mOnSourceListener.onSourceSelected(REQUEST_CODE_URL);
             this.dismiss();
+            mOnSourceListener.onSourceSelected(REQUEST_CODE_URL);
         });
     }
 
