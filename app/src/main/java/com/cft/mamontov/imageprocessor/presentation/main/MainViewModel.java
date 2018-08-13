@@ -86,12 +86,12 @@ public class MainViewModel extends ViewModel {
         mList.add(image);
         getItem.postValue(image);
         mDisposable.add(Observable.intervalRange(1, 10, 0,
-                getLongProcessing()/10, TimeUnit.SECONDS)
+                getLongProcessing() / 10, TimeUnit.SECONDS)
                 .subscribeOn(mScheduler.newThread())
                 .observeOn(mScheduler.ui())
                 .subscribe(v -> {
                     Log.e("ViewModel: ", " updateProcessing.postValue: " + v);
-                    image.setProgress(v.intValue()*10);
+                    image.setProgress(v.intValue() * 10);
                     updateProcessing.postValue(image);
                 }, Throwable::printStackTrace, () -> applyTransformation(transformation, image)));
     }
@@ -113,10 +113,21 @@ public class MainViewModel extends ViewModel {
                 .observeOn(mScheduler.ui())
                 .subscribe(bitmap -> {
                             image.setBitmap(bitmap);
-                            mList.add(mList.size() - 1, image);
+                            mList.set(getListPosition(image.getId()), image);
                             updateProcessing.postValue(image);
                             Log.e("ViewModel: ", "getItem.postValue(image)");
                         },
                         throwable -> Log.e("ViewModel: ", throwable.getLocalizedMessage())));
+    }
+
+    private int getListPosition(int id) {
+        TransformedImage image;
+        for (int i = 0; i < mList.size(); i++) {
+            image = mList.get(i);
+            if (image.getId() == id) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
