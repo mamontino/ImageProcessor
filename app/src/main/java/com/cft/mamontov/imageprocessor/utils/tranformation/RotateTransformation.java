@@ -12,7 +12,6 @@ public class RotateTransformation implements Transformation {
 
         Matrix matrix = new Matrix();
         matrix.postRotate(90);
-        matrix.postScale(1.5f, 1.5f);
         return Bitmap.createBitmap(source, 0, 0, width, height, matrix, true);
     }
 }

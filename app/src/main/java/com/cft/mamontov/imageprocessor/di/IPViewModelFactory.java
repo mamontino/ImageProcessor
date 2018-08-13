@@ -16,7 +16,7 @@ public class IPViewModelFactory implements ViewModelProvider.Factory {
             Provider<ViewModel>> viewModels;
 
     @Inject
-    public IPViewModelFactory(Map<Class<? extends ViewModel>,
+    IPViewModelFactory(Map<Class<? extends ViewModel>,
             Provider<ViewModel>> viewModels) {
         this.viewModels = viewModels;
     }

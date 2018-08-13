@@ -34,9 +34,8 @@ public class MainViewModel extends ViewModel {
     private boolean hasImage;
 
     @Inject
-    public MainViewModel(MainInteractor interactor, BaseSchedulerProvider scheduler,
-                         CompositeDisposable disposable) {
-        Log.e("MainViewModel ", " created new MainViewModel");
+    MainViewModel(MainInteractor interactor, BaseSchedulerProvider scheduler,
+                  CompositeDisposable disposable) {
         mInteractor = interactor;
         mScheduler = scheduler;
         mDisposable = disposable;
@@ -50,7 +49,6 @@ public class MainViewModel extends ViewModel {
     MutableLiveData<List<TransformedImage>> getHistory = new MutableLiveData<>();
 
     public boolean isHasImage() {
-        Log.e("ViewModel", "isHasImage: " + hasImage);
         return hasImage;
     }
 
@@ -59,7 +57,6 @@ public class MainViewModel extends ViewModel {
     }
 
     public void setCurrentPicture(TransformedImage picture) {
-        Log.e("ViewModel ", "setCurrentPicture");
         this.mCurrentPicture = picture;
         hasImage = true;
         updateCurrentPicture.postValue(mCurrentPicture);
@@ -115,11 +112,5 @@ public class MainViewModel extends ViewModel {
 
     public void getImageHistory() {
         getHistory.postValue(mList);
-    }
-
-    @Override
-    protected void onCleared() {
-        Log.e("ViewModel", "onCleared");
-        super.onCleared();
     }
 }

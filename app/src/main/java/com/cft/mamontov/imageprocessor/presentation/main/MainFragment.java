@@ -99,16 +99,15 @@ public class MainFragment extends DaggerFragment implements ImageListAdapter.OnI
             switch (requestCode) {
                 case REQUEST_CAMERA_PICTURE:
                     Bitmap bitmap = BitmapUtils.getBitmap(mViewModel.getCurrentPicturePath());
-                    TransformedImage image = new TransformedImage(BitmapUtils.getResizedBitmap(bitmap, mBinding.mainImage.getHeight(),
-                            mBinding.mainImage.getHeight()));
+                    bitmap = Bitmap.createScaledBitmap(bitmap, mBinding.imageContainer.getWidth(),
+                            mBinding.imageContainer.getHeight(), true);
+                    TransformedImage image = new TransformedImage(bitmap);
                     mViewModel.setCurrentPicture(image);
                     break;
                 case REQUEST_GALLERY_PICTURE:
                     if (data == null || getActivity() == null) return;
                     Bitmap galleryBitmap = BitmapUtils.getBitmap(data.getData(), getActivity());
-                    TransformedImage galleryImage = new TransformedImage(BitmapUtils
-                            .getResizedBitmap(galleryBitmap, mBinding.mainImage.getHeight(),
-                            mBinding.mainImage.getHeight()));
+                    TransformedImage galleryImage = new TransformedImage(galleryBitmap);
                     mViewModel.setCurrentPicture(galleryImage);
             }
         }
@@ -246,14 +245,12 @@ public class MainFragment extends DaggerFragment implements ImageListAdapter.OnI
 
     private void addItems(List<TransformedImage> list) {
         if (list != null && list.size() > 0) {
-            Log.e(TAG, "addItems: " + list.size());
             mAdapter.addItems(list);
             mBinding.fragmentMainRv.scrollToPosition(mAdapter.getItemCount() - 1);
         }
     }
 
     private void addItem(TransformedImage picture) {
-        Log.e(TAG, "addItems");
         mAdapter.addItem(picture);
         mBinding.fragmentMainRv.scrollToPosition(mAdapter.getItemCount() - 1);
     }
