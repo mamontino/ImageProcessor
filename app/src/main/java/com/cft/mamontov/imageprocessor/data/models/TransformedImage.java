@@ -9,12 +9,20 @@ import com.cft.mamontov.imageprocessor.utils.Processable;
 public class TransformedImage implements Processable {
 
     private int id;
-    private boolean inProgress;
-    private Bitmap bitmap;
-    private ProgressBar progressBar;
+    private Bitmap bitmap = null;
+    private ProgressBar progressBar = null;
+    private int progress = 0;
 
-    public TransformedImage(Bitmap bitmap) {
-        this.bitmap = bitmap;
+    public TransformedImage(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public Bitmap getBitmap() {
@@ -25,9 +33,14 @@ public class TransformedImage implements Processable {
         this.bitmap = bitmap;
     }
 
+    public int getProgress() {
+        return progress;
+    }
+
     @Override
     public void setProgress(int progress) {
         if (progressBar != null) {
+            this.progress = progress;
             progressBar.setProgress(progress);
         }
     }
@@ -35,6 +48,6 @@ public class TransformedImage implements Processable {
     @Override
     public void setProgressBar(ProgressBar progressBar) {
         this.progressBar = progressBar;
-        progressBar.setProgress(0);
+        progressBar.setProgress(progress);
     }
 }

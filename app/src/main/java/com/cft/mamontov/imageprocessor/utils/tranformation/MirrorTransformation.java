@@ -2,17 +2,17 @@ package com.cft.mamontov.imageprocessor.utils.tranformation;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.util.DisplayMetrics;
 
 public class MirrorTransformation implements Transformation {
 
     @Override
     public Bitmap transform(Bitmap source) {
-
-        int width = source.getWidth();
-        int height = source.getHeight();
-
-        Matrix matrix = new Matrix();
-        matrix.preScale(-1, 1);
-        return Bitmap.createBitmap(source, 0, 0, width, height, matrix, false);
+        Matrix m = new Matrix();
+        m.preScale(-1, 1);
+        Bitmap bitmap = Bitmap.createBitmap(source, 0, 0, source.getWidth(),
+                source.getHeight(), m, false);
+        bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
+        return bitmap;
     }
 }

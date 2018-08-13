@@ -1,7 +1,6 @@
 package com.cft.mamontov.imageprocessor.presentation.main;
 
 import android.Manifest;
-import android.app.ProgressDialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -36,7 +35,6 @@ import com.cft.mamontov.imageprocessor.utils.tranformation.RotateTransformation;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -45,7 +43,7 @@ import dagger.android.support.DaggerFragment;
 import static android.app.Activity.RESULT_OK;
 
 @ActivityScoped
-public class MainFragment extends DaggerFragment implements ImageListAdapter.OnItemClickListener {
+public class MainFragment extends DaggerFragment{
 
     public static final String TAG = "MainFragment";
 
@@ -60,7 +58,6 @@ public class MainFragment extends DaggerFragment implements ImageListAdapter.OnI
     private FragmentMainBinding mBinding;
     private CoordinatorLayout mCoordinator;
     private ImageListAdapter mAdapter;
-    private ProgressDialog mProgressDialog;
 
     @Inject
     IPViewModelFactory mViewModelFactory;
@@ -76,7 +73,8 @@ public class MainFragment extends DaggerFragment implements ImageListAdapter.OnI
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+//        setRetainInstance(true);
+        Log.e(TAG, "onCreate");
     }
 
     @Nullable
@@ -96,22 +94,25 @@ public class MainFragment extends DaggerFragment implements ImageListAdapter.OnI
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e(TAG, "onDestroy");
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_CAMERA_PICTURE:
-//                    Bitmap bitmap = new BitmapUtils().getCompressedBitmap(mViewModel.getCurrentPicturePath());
                     Bitmap bitmap = BitmapUtils.getBitmap(mViewModel.getCurrentPicturePath());
                     bitmap = Bitmap.createScaledBitmap(bitmap, mBinding.imageContainer.getWidth(),
                             mBinding.imageContainer.getHeight(), true);
-                    TransformedImage image = new TransformedImage(bitmap);
-                    mViewModel.setCurrentPicture(image);
+                    mViewModel.setCurrentPicture(bitmap);
                     break;
                 case REQUEST_GALLERY_PICTURE:
                     if (data == null || getActivity() == null) return;
                     Bitmap galleryBitmap = BitmapUtils.getBitmap(data.getData(), getActivity());
-                    TransformedImage galleryImage = new TransformedImage(galleryBitmap);
-                    mViewModel.setCurrentPicture(galleryImage);
+                    mViewModel.setCurrentPicture(galleryBitmap);
             }
         }
     }
@@ -128,11 +129,6 @@ public class MainFragment extends DaggerFragment implements ImageListAdapter.OnI
                 Log.e(TAG, getResources().getString(R.string.camera_permission_denied));
             }
         }
-    }
-
-    @Override
-    public void onCurrentPictureChanged(int position) {
-        mViewModel.setCurrentPicture(mAdapter.getCurrentItem(position));
     }
 
     public void loadImage(int requestCode) {
@@ -225,12 +221,12 @@ public class MainFragment extends DaggerFragment implements ImageListAdapter.OnI
         }
     }
 
-    private void setCurrentImage(TransformedImage image) {
+    private void setCurrentImage(Bitmap bitmap) {
         if (mViewModel.isHasImage()) {
             mBinding.addImageButton.setVisibility(View.GONE);
             mBinding.fragmentMainBtnExif.setVisibility(View.VISIBLE);
             mBinding.mainImage.setVisibility(View.VISIBLE);
-            mBinding.mainImage.setImageBitmap(image.getBitmap());
+            mBinding.mainImage.setImageBitmap(bitmap);
         } else {
             mBinding.addImageButton.setVisibility(View.VISIBLE);
             mBinding.fragmentMainBtnExif.setVisibility(View.GONE);
@@ -242,24 +238,12 @@ public class MainFragment extends DaggerFragment implements ImageListAdapter.OnI
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
-    private void showProgressIndicator(boolean b) {
-        mAdapter.showProgressIndicator(b);
-    }
-
-    private void addItems(List<TransformedImage> list) {
-        if (list != null && list.size() > 0) {
-            mAdapter.addItems(list);
-            mBinding.fragmentMainRv.scrollToPosition(mAdapter.getItemCount() - 1);
-        }
+    private void updateProcessing(TransformedImage image) {
+            mAdapter.updateProcessing(image);
     }
 
     private void addItem(TransformedImage picture) {
         mAdapter.addItem(picture);
-        mBinding.fragmentMainRv.scrollToPosition(mAdapter.getItemCount() - 1);
-    }
-
-    private void updateProcessing(int val) {
-        mAdapter.updateProcessing(val);
     }
 
     private void prepareViews() {
@@ -270,7 +254,6 @@ public class MainFragment extends DaggerFragment implements ImageListAdapter.OnI
         mBinding.fragmentMainBtnInvertColors.setOnClickListener(v -> transformImage(INVERT_COLOR));
         mBinding.fragmentMainBtnMirrorImage.setOnClickListener(v -> transformImage(MIRROR_IMAGE));
         mBinding.fragmentMainBtnRotate.setOnClickListener(v -> transformImage(ROTATE_IMAGE));
-        prepareProgressDialog();
         prepareRecyclerView();
     }
 
@@ -281,22 +264,26 @@ public class MainFragment extends DaggerFragment implements ImageListAdapter.OnI
         mBinding.fragmentMainRv.setItemAnimator(new DefaultItemAnimator());
         mAdapter = new ImageListAdapter(getContext());
         mBinding.fragmentMainRv.setAdapter(mAdapter);
-    }
+        mAdapter.setOnItemClickListener(new ImageListAdapter.OnItemClickListener() {
+            @Override
+            public void onCurrentPictureChanged(int position) {
+                mViewModel.setCurrentPicture(mAdapter.getCurrentItem(position).getBitmap());
+            }
 
-    private void prepareProgressDialog() {
-        mProgressDialog = new ProgressDialog(getContext());
-        mProgressDialog.setCancelable(false);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgressDialog.setMax(100);
+            @Override
+            public void onItemRemoved(int position) {
+                mViewModel.removeItem(position);
+            }
+        });
     }
 
     private void prepareSubscribers() {
-        mViewModel.startProcessing.observe(this, this::showProgressIndicator);
         mViewModel.updateProcessing.observe(this, this::updateProcessing);
         mViewModel.updateCurrentPicture.observe(this, this::setCurrentImage);
-        mViewModel.Item.observe(this, this::addItem);
-        mViewModel.getHistory.observe(this, this::addItems);
-        mViewModel.getImageHistory();
+        mViewModel.getItem.observe(this, this::addItem);
         setCurrentImage(mViewModel.getCurrentPicture());
+        if (mViewModel.getList() != null) {
+            mAdapter.addItems(mViewModel.getList());
+        }
     }
 }

@@ -10,16 +10,16 @@ import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
 import com.cft.mamontov.imageprocessor.use_case.MainInteractor;
 import com.cft.mamontov.imageprocessor.utils.schedulers.BaseSchedulerProvider;
 import com.cft.mamontov.imageprocessor.utils.tranformation.Transformation;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
 
 public class MainViewModel extends ViewModel {
@@ -30,9 +30,10 @@ public class MainViewModel extends ViewModel {
     private MainInteractor mInteractor;
     private BaseSchedulerProvider mScheduler;
     private CompositeDisposable mDisposable;
+    private int mId = 0;
 
     private List<TransformedImage> mList;
-    private TransformedImage mCurrentPicture;
+    private Bitmap mCurrentPicture;
     private String mCurrentPicturePath;
     private boolean hasImage;
 
@@ -42,14 +43,16 @@ public class MainViewModel extends ViewModel {
         mInteractor = interactor;
         mScheduler = scheduler;
         mDisposable = disposable;
-        mList = new ArrayList<>();
+        mList = Collections.synchronizedList(new ArrayList<>());
     }
 
-    MutableLiveData<Integer> updateProcessing = new MutableLiveData<>();
-    MutableLiveData<Boolean> startProcessing = new MutableLiveData<>();
-    MutableLiveData<TransformedImage> Item = new MutableLiveData<>();
-    MutableLiveData<TransformedImage> updateCurrentPicture = new MutableLiveData<>();
-    MutableLiveData<List<TransformedImage>> getHistory = new MutableLiveData<>();
+    MutableLiveData<Bitmap> updateCurrentPicture = new MutableLiveData<>();
+    MutableLiveData<TransformedImage> updateProcessing = new MutableLiveData<>();
+    MutableLiveData<TransformedImage> getItem = new MutableLiveData<>();
+
+    public List<TransformedImage> getList() {
+        return mList;
+    }
 
     public boolean isHasImage() {
         return hasImage;
@@ -59,13 +62,13 @@ public class MainViewModel extends ViewModel {
         hasImage = has;
     }
 
-    public void setCurrentPicture(TransformedImage picture) {
-        this.mCurrentPicture = picture;
+    public void setCurrentPicture(Bitmap bitmap) {
+        this.mCurrentPicture = bitmap;
         hasImage = true;
         updateCurrentPicture.postValue(mCurrentPicture);
     }
 
-    public TransformedImage getCurrentPicture() {
+    public Bitmap getCurrentPicture() {
         return mCurrentPicture;
     }
 
@@ -78,12 +81,19 @@ public class MainViewModel extends ViewModel {
     }
 
     public void transformImage(Transformation transformation) {
-        long val = getLongProcessing();
-        mDisposable.add(Observable.intervalRange(0L, val, 1, 1, TimeUnit.SECONDS, mScheduler.newThread())
-                .subscribeOn(mScheduler.ui())
-                .subscribe(v -> updateProcessing.postValue(v.intValue()),
-                        Throwable::printStackTrace,
-                        () -> applyTransformation(transformation)));
+        mId++;
+        TransformedImage image = new TransformedImage(mId);
+        mList.add(image);
+        getItem.postValue(image);
+        mDisposable.add(Observable.intervalRange(1, 10, 0,
+                getLongProcessing()/10, TimeUnit.SECONDS)
+                .subscribeOn(mScheduler.newThread())
+                .observeOn(mScheduler.ui())
+                .subscribe(v -> {
+                    Log.e("ViewModel: ", " updateProcessing.postValue: " + v);
+                    image.setProgress(v.intValue()*10);
+                    updateProcessing.postValue(image);
+                }, Throwable::printStackTrace, () -> applyTransformation(transformation, image)));
     }
 
     public void removeItem(int position) {
@@ -91,26 +101,22 @@ public class MainViewModel extends ViewModel {
     }
 
     public void getImageFromUrl(String url, ImageView view) {
-       Picasso.get().load(url).into(view);
-    }
-
-    private void onImageLoaded(Bitmap bitmap) {
-        updateCurrentPicture.postValue(new TransformedImage(bitmap));
-        mList.add(new TransformedImage(bitmap));
     }
 
     private long getLongProcessing() {
-//        return mMinDelay + (long) (Math.random() * mMaxDelay - mMinDelay);
-        return 1;
+        return mMinDelay + (long) (Math.random() * mMaxDelay - mMinDelay);
     }
 
-    private void applyTransformation(Transformation transformation) {
-        Bitmap picture = transformation.transform(mCurrentPicture.getBitmap());
-        mList.add(new TransformedImage(picture));
-        Item.postValue(new TransformedImage(picture));
-    }
-
-    public void getImageHistory() {
-        getHistory.postValue(mList);
+    private synchronized void applyTransformation(Transformation transformation, TransformedImage image) {
+        mDisposable.add(Single.just(transformation.transform(mCurrentPicture))
+                .subscribeOn(mScheduler.newThread())
+                .observeOn(mScheduler.ui())
+                .subscribe(bitmap -> {
+                            image.setBitmap(bitmap);
+                            mList.add(mList.size() - 1, image);
+                            updateProcessing.postValue(image);
+                            Log.e("ViewModel: ", "getItem.postValue(image)");
+                        },
+                        throwable -> Log.e("ViewModel: ", throwable.getLocalizedMessage())));
     }
 }

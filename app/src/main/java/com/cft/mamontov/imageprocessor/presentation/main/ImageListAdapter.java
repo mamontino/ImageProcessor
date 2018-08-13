@@ -24,12 +24,13 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Item
     private static final int SECOND_VIEW_TYPE = 2;
 
     private Context mContext;
-    private List<TransformedImage> mList;
+    private final List<TransformedImage> mList;
 
     private OnItemClickListener mOnItemClickListener;
 
     public interface OnItemClickListener {
         void onCurrentPictureChanged(int position);
+        void onItemRemoved(int position);
     }
 
     public void setOnItemClickListener(ImageListAdapter.OnItemClickListener onItemClickListener) {
@@ -40,6 +41,29 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Item
         if (mOnItemClickListener != null) {
             mOnItemClickListener.onCurrentPictureChanged(position);
         }
+    }
+
+    private void onItemRemoved(int position) {
+        if (mOnItemClickListener != null) {
+            mOnItemClickListener.onItemRemoved(position);
+        }
+    }
+
+    private int getPositionById(int id) {
+        synchronized (mList) {
+            TransformedImage image;
+            for (int i = 0; i < mList.size(); i++) {
+                image = getItem(i);
+                if (image.getId() == id) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    private TransformedImage getItem(int i) {
+        return mList.get(i);
     }
 
     public ImageListAdapter(Context context) {
@@ -71,17 +95,17 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Item
     }
 
     void addItems(List<TransformedImage> items) {
-        mList.clear();
         mList.addAll(items);
         notifyDataSetChanged();
     }
 
     void addItem(TransformedImage item) {
-        mList.add(item);
+        mList.add(0, item);
         notifyDataSetChanged();
     }
 
     private void removeItem(int position) {
+        onItemRemoved(position);
         mList.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, mList.size());
@@ -91,12 +115,17 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Item
         return mList.get(position);
     }
 
-    void showProgressIndicator(boolean b) {
-
-    }
-
-    void updateProcessing(int val) {
-
+    void updateProcessing(TransformedImage image) {
+        int index = getPositionById(image.getId());
+        if (index < 0) {
+            return;
+        }
+        if (image.getBitmap() != null){
+            getItem(index).setBitmap(image.getBitmap());
+            notifyDataSetChanged();
+        }else {
+            getItem(index).setProgress(image.getProgress());
+        }
     }
 
     class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
@@ -114,16 +143,25 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Item
         void bind(int position) {
 
             mPosition = position;
+
             TransformedImage data = mList.get(position);
+            data.setProgressBar(mBinding.itemImageProgress);
 
             if (mViewType == FIRST_VIEW_TYPE) {
                 mBinding.getRoot().setBackgroundColor(mContext.getResources().getColor(R.color.grey));
             } else {
                 mBinding.getRoot().setBackgroundColor(mContext.getResources().getColor(R.color.white));
             }
-            mBinding.itemImageIcon.setImageBitmap(data.getBitmap());
-            mBinding.itemImageProgress.setVisibility(View.GONE);
-            mBinding.getRoot().setOnCreateContextMenuListener(this);
+
+            if (data.getBitmap() == null) {
+                mBinding.itemImageProgress.setVisibility(View.VISIBLE);
+                mBinding.itemImageIcon.setVisibility(View.GONE);
+            } else {
+                mBinding.itemImageProgress.setVisibility(View.GONE);
+                mBinding.itemImageIcon.setVisibility(View.VISIBLE);
+                mBinding.itemImageIcon.setImageBitmap(data.getBitmap());
+                mBinding.getRoot().setOnCreateContextMenuListener(this);
+            }
         }
 
         @Override
