@@ -9,8 +9,6 @@ import com.cft.mamontov.imageprocessor.data.network.NetworkStateInterceptor;
 import com.cft.mamontov.imageprocessor.data.network.UrlInterceptor;
 import com.cft.mamontov.imageprocessor.di.name.OkHttpNetworkInteceptor;
 import com.cft.mamontov.imageprocessor.di.name.OkHttpUrlInterceptor;
-import com.cft.mamontov.imageprocessor.utils.schedulers.BaseSchedulerProvider;
-import com.cft.mamontov.imageprocessor.utils.schedulers.SchedulerProvider;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -33,9 +31,6 @@ import static java.util.Collections.singletonList;
 
 @Module
 public class NetworkModule {
-
-    public NetworkModule() {
-    }
 
     @OkHttpUrlInterceptor
     @Provides
@@ -100,7 +95,6 @@ public class NetworkModule {
                 .build();
     }
 
-
     @Provides
     @Singleton
     public static Gson provideGson() {
@@ -114,11 +108,5 @@ public class NetworkModule {
     @Provides
     public static ApiService provideApi(Retrofit retrofit) {
         return retrofit.create(ApiService.class);
-    }
-
-    @Provides
-    @Singleton
-    public static BaseSchedulerProvider provideSchedulerProvider() {
-        return SchedulerProvider.getInstance();
     }
 }
