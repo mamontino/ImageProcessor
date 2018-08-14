@@ -48,6 +48,7 @@ import static android.app.Activity.RESULT_OK;
 public class MainFragment extends DaggerFragment implements ImageListAdapter.OnItemClickListener {
 
     public static final String TAG = "MainFragment";
+    public static final String MESSAGE_PROGRESS = "message progress";
 
     private static final int PERMISSION_CODE_CAMERA = 102;
     private static final int REQUEST_CAMERA_PICTURE = 99;

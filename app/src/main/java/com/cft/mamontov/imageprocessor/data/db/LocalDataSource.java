@@ -2,13 +2,16 @@ package com.cft.mamontov.imageprocessor.data.db;
 
 import android.support.annotation.NonNull;
 
-import com.cft.mamontov.imageprocessor.data.DataSource;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.sql.DataSource;
+
+import io.reactivex.Observable;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 
 @Singleton
-public class LocalDataSource implements DataSource {
+public class LocalDataSource implements ILocalDataSource {
 
     private final UserDao mUserDao;
 

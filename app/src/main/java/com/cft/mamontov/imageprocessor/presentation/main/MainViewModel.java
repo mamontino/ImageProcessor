@@ -3,15 +3,12 @@ package com.cft.mamontov.imageprocessor.presentation.main;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
 import com.cft.mamontov.imageprocessor.use_case.MainInteractor;
 import com.cft.mamontov.imageprocessor.utils.schedulers.BaseSchedulerProvider;
 import com.cft.mamontov.imageprocessor.utils.tranformation.Transformation;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,7 +88,7 @@ public class MainViewModel extends ViewModel {
     }
 
     public void getImageFromUrl(String url, ImageView view) {
-       Picasso.get().load(url).into(view);
+
     }
 
     private void onImageLoaded(Bitmap bitmap) {
