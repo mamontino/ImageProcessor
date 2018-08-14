@@ -107,12 +107,12 @@ public class MainFragment extends DaggerFragment{
                     Bitmap bitmap = BitmapUtils.getBitmap(mViewModel.getCurrentPicturePath());
                     bitmap = Bitmap.createScaledBitmap(bitmap, mBinding.imageContainer.getWidth(),
                             mBinding.imageContainer.getHeight(), true);
-                    mViewModel.setCurrentPicture(bitmap);
+                    mViewModel.setCurrentPicture(bitmap, mBinding.mainImage.getWidth(), mBinding.mainImage.getHeight());
                     break;
                 case REQUEST_GALLERY_PICTURE:
                     if (data == null || getActivity() == null) return;
                     Bitmap galleryBitmap = BitmapUtils.getBitmap(data.getData(), getActivity());
-                    mViewModel.setCurrentPicture(galleryBitmap);
+                    mViewModel.setCurrentPicture(galleryBitmap, mBinding.imageContainer.getWidth(), mBinding.imageContainer.getHeight());
             }
         }
     }
@@ -267,7 +267,8 @@ public class MainFragment extends DaggerFragment{
         mAdapter.setOnItemClickListener(new ImageListAdapter.OnItemClickListener() {
             @Override
             public void onCurrentPictureChanged(int position) {
-                mViewModel.setCurrentPicture(mAdapter.getCurrentItem(position).getBitmap());
+                mViewModel.setCurrentPicture(mAdapter.getCurrentItem(position).getBitmap(),
+                        mBinding.mainImage.getWidth(), mBinding.mainImage.getHeight());
             }
 
             @Override

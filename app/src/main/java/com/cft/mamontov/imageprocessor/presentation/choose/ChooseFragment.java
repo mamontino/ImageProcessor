@@ -12,8 +12,6 @@ import android.view.ViewGroup;
 import com.cft.mamontov.imageprocessor.databinding.FragmentChooseBinding;
 
 import com.cft.mamontov.imageprocessor.R;
-import com.cft.mamontov.imageprocessor.di.DaggerBottomShitDialogFragment;
-
 import javax.inject.Inject;
 
 import dagger.android.DaggerDialogFragment;

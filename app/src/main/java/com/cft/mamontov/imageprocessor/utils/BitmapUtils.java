@@ -100,7 +100,7 @@ public class BitmapUtils {
         return stringUrl;
     }
 
-    public static Bitmap storeThumbnail(ContentResolver cr, Bitmap source, long id, float width,
+    private static Bitmap storeThumbnail(ContentResolver cr, Bitmap source, long id, float width,
                                          float height, int kind) {
 
         Matrix matrix = new Matrix();
@@ -136,7 +136,7 @@ public class BitmapUtils {
         }
     }
 
-    public Bitmap getCompressedBitmap(String imagePath) {
+    public static Bitmap getCompressedBitmap(String imagePath) {
         float maxHeight = 1920.0f;
         float maxWidth = 1080.0f;
         Bitmap scaledBitmap = null;
@@ -222,7 +222,7 @@ public class BitmapUtils {
         return updatedBitmap;
     }
 
-    private int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         final int height = options.outHeight;
         final int width = options.outWidth;
         int inSampleSize = 1;

@@ -3,6 +3,7 @@ package com.cft.mamontov.imageprocessor.presentation.main;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -32,7 +33,7 @@ public class MainViewModel extends ViewModel {
     private CompositeDisposable mDisposable;
     private int mId = 0;
 
-    private List<TransformedImage> mList;
+    private final List<TransformedImage> mList;
     private Bitmap mCurrentPicture;
     private String mCurrentPicturePath;
     private boolean hasImage;
@@ -62,8 +63,8 @@ public class MainViewModel extends ViewModel {
         hasImage = has;
     }
 
-    public void setCurrentPicture(Bitmap bitmap) {
-        this.mCurrentPicture = bitmap;
+    public void setCurrentPicture(Bitmap bitmap, int w, int h) {
+        this.mCurrentPicture = getResizedBitmap(bitmap, w, h);
         hasImage = true;
         updateCurrentPicture.postValue(mCurrentPicture);
     }
@@ -121,13 +122,35 @@ public class MainViewModel extends ViewModel {
     }
 
     private int getListPosition(int id) {
-        TransformedImage image;
-        for (int i = 0; i < mList.size(); i++) {
-            image = mList.get(i);
-            if (image.getId() == id) {
-                return i;
+        synchronized (mList){
+            TransformedImage image;
+            for (int i = 0; i < mList.size(); i++) {
+                image = mList.get(i);
+                if (image.getId() == id) {
+                    return i;
+                }
             }
+            return -1;
         }
-        return -1;
+    }
+
+    private Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+        bm.recycle();
+        return resizedBitmap;
+
+//        int scaleToUse = 20; // this will be our percentage
+//        Bitmap bmp = BitmapFactory.decodeResource(
+//                context.getResources(), R.drawable.mypng);
+//        int sizeY = screenResolution.y * scaleToUse / 100;
+//        int sizeX = bmp.getWidth() * sizeY / bmp.getHeight();
+//        Bitmap scaled = Bitmap.createScaledBitmap(bmp, sizeX, sizeY, false);
     }
 }

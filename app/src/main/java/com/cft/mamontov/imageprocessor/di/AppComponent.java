@@ -6,6 +6,7 @@ import com.cft.mamontov.imageprocessor.IPApplication;
 import com.cft.mamontov.imageprocessor.data.Repository;
 import com.cft.mamontov.imageprocessor.di.module.ActivityModule;
 import com.cft.mamontov.imageprocessor.di.module.ApplicationModule;
+import com.cft.mamontov.imageprocessor.di.module.NetworkModule;
 import com.cft.mamontov.imageprocessor.di.module.RepositoryModule;
 import com.cft.mamontov.imageprocessor.di.module.ViewModelModule;
 
@@ -17,7 +18,7 @@ import dagger.android.AndroidInjector;
 import dagger.android.support.AndroidSupportInjectionModule;
 
 @Singleton
-@Component(modules = {RepositoryModule.class, ApplicationModule.class,
+@Component(modules = {NetworkModule.class, RepositoryModule.class, ApplicationModule.class,
         ActivityModule.class, ViewModelModule.class, AndroidSupportInjectionModule.class})
 public interface AppComponent extends AndroidInjector<IPApplication> {
 
