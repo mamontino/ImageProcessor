@@ -1,20 +1,31 @@
 package com.cft.mamontov.imageprocessor.data;
 
+import com.cft.mamontov.imageprocessor.data.db.ILocalDataSource;
+import com.cft.mamontov.imageprocessor.data.network.INetworkDataSource;
 import com.cft.mamontov.imageprocessor.di.name.Local;
 import com.cft.mamontov.imageprocessor.di.name.Remote;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
-public class Repository implements DataSource {
+import io.reactivex.Single;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 
-    private final DataSource mLocalDataSource;
-    private final DataSource mRemoteDataSource;
+@Singleton
+public class Repository implements ILocalDataSource, INetworkDataSource {
+
+    private final ILocalDataSource mLocalDataSource;
+    private final INetworkDataSource mRemoteDataSource;
 
     @Inject
-    Repository(@Local DataSource localDataSource, @Remote DataSource remoteDataSource) {
+    Repository(@Local ILocalDataSource localDataSource, @Remote INetworkDataSource remoteDataSource) {
         mLocalDataSource = localDataSource;
         mRemoteDataSource = remoteDataSource;
+    }
+
+    @Override
+    public Single<Response<ResponseBody>> getImageFromUrl(String url) {
+        return mRemoteDataSource.getImageFromUrl(url);
     }
 }

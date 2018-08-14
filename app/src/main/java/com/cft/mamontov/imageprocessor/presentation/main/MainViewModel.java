@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.util.Log;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
 import com.cft.mamontov.imageprocessor.use_case.MainInteractor;
@@ -22,6 +23,8 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.disposables.CompositeDisposable;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 
 public class MainViewModel extends ViewModel {
 
@@ -101,7 +104,14 @@ public class MainViewModel extends ViewModel {
         mList.remove(position);
     }
 
-    public void getImageFromUrl(String url, ImageView view) {
+    public void getImageFromUrl(String url) {
+        mDisposable.add(mInteractor.getImageFromUrl(url)
+                .observeOn(mScheduler.ui())
+                .subscribe(this::onImageLoaded, Throwable::printStackTrace));
+    }
+
+    private void onImageLoaded(Response<ResponseBody> response) {
+        Log.e("ViewModel", "on image loaded");
     }
 
     private long getLongProcessing() {
@@ -122,7 +132,7 @@ public class MainViewModel extends ViewModel {
     }
 
     private int getListPosition(int id) {
-        synchronized (mList){
+        synchronized (mList) {
             TransformedImage image;
             for (int i = 0; i < mList.size(); i++) {
                 image = mList.get(i);

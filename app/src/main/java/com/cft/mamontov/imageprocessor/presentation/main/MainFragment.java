@@ -46,6 +46,7 @@ import static android.app.Activity.RESULT_OK;
 public class MainFragment extends DaggerFragment{
 
     public static final String TAG = "MainFragment";
+    public static final String MESSAGE_PROGRESS = "MainFragmentLoadImage";
 
     private static final int PERMISSION_CODE_CAMERA = 102;
     private static final int REQUEST_CAMERA_PICTURE = 99;
@@ -143,7 +144,7 @@ public class MainFragment extends DaggerFragment{
     }
 
     public void loadImage(String uri) {
-        mViewModel.getImageFromUrl(uri, mBinding.mainImage);
+        mViewModel.getImageFromUrl(uri);
     }
 
     private void requestCameraPermission() {

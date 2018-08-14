@@ -91,7 +91,7 @@ public class NetworkModule {
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(rxAdapterFactory)
-                .baseUrl("")
+                .baseUrl("https://www.yandex.ru")
                 .build();
     }
 

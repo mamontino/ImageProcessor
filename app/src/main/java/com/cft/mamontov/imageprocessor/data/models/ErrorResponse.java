@@ -65,7 +65,6 @@ public class ErrorResponse implements Parcelable {
         this.mName = name;
     }
 
-
     @Override
     public int describeContents() {
         return 0;

@@ -3,10 +3,11 @@ package com.cft.mamontov.imageprocessor.di.module;
 import android.app.Application;
 import android.arch.persistence.room.Room;
 
-import com.cft.mamontov.imageprocessor.data.DataSource;
+import com.cft.mamontov.imageprocessor.data.db.ILocalDataSource;
 import com.cft.mamontov.imageprocessor.data.db.IPDatabase;
 import com.cft.mamontov.imageprocessor.data.db.LocalDataSource;
 import com.cft.mamontov.imageprocessor.data.db.UserDao;
+import com.cft.mamontov.imageprocessor.data.network.INetworkDataSource;
 import com.cft.mamontov.imageprocessor.data.network.RemoteDataSource;
 import com.cft.mamontov.imageprocessor.di.name.Local;
 import com.cft.mamontov.imageprocessor.di.name.Remote;
@@ -25,12 +26,12 @@ abstract public class RepositoryModule {
     @Singleton
     @Binds
     @Local
-    abstract DataSource provideLocalDataSource(LocalDataSource dataSource);
+    abstract ILocalDataSource provideLocalDataSource(LocalDataSource dataSource);
 
     @Singleton
     @Binds
     @Remote
-    abstract DataSource provideRemoteDataSource(RemoteDataSource dataSource);
+    abstract INetworkDataSource provideRemoteDataSource(RemoteDataSource dataSource);
 
     @Singleton
     @Provides

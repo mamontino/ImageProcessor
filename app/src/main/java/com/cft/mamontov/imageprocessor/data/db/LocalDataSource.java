@@ -2,13 +2,11 @@ package com.cft.mamontov.imageprocessor.data.db;
 
 import android.support.annotation.NonNull;
 
-import com.cft.mamontov.imageprocessor.data.DataSource;
-
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class LocalDataSource implements DataSource {
+public class LocalDataSource implements ILocalDataSource {
 
     private final UserDao mUserDao;
 
@@ -16,4 +14,5 @@ public class LocalDataSource implements DataSource {
     public LocalDataSource(@NonNull UserDao userDao) {
         mUserDao = userDao;
     }
+
 }
