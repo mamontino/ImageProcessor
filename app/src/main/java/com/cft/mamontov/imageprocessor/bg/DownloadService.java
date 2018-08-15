@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
-import android.os.Environment;
 import android.os.StrictMode;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -16,12 +15,8 @@ import com.cft.mamontov.imageprocessor.data.Repository;
 import com.cft.mamontov.imageprocessor.presentation.main.MainFragment;
 import com.cft.mamontov.imageprocessor.utils.BitmapUtils;
 
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 import javax.inject.Inject;
 
@@ -89,13 +84,9 @@ public class DownloadService extends DaggerIntentService {
                 .flatMap((Response<ResponseBody> response) -> {
                     try {
                         ResponseBody body = response.body();
-                        String fileName = "dtykdeuk";
-
-                        File file = new File(Environment
-                                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-                                .getAbsoluteFile(), fileName);
-
+                        File file = BitmapUtils.createImageFile(this);
                         BufferedSink sink = Okio.buffer(Okio.sink(file));
+                        assert body != null;
                         sink.writeAll(body.source());
                         sink.close();
                         return Observable.just(file);
@@ -109,6 +100,7 @@ public class DownloadService extends DaggerIntentService {
 
     private void onSuccess(File file) {
         Log.e("Service", "onSuccess");
+        BitmapUtils.addPhotoToGallery(file.getAbsolutePath(), this);
         onDownloadComplete(true, file.getAbsolutePath());
     }
 
