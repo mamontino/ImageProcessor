@@ -2,13 +2,11 @@ package com.cft.mamontov.imageprocessor.di.module;
 
 import android.app.Application;
 
-import com.cft.mamontov.imageprocessor.data.network.ApiService;
 import com.cft.mamontov.imageprocessor.data.network.ErrorHandler;
 import com.cft.mamontov.imageprocessor.data.network.NetworkChecker;
 import com.cft.mamontov.imageprocessor.data.network.NetworkStateInterceptor;
-import com.cft.mamontov.imageprocessor.data.network.UrlInterceptor;
 import com.cft.mamontov.imageprocessor.di.name.OkHttpNetworkInteceptor;
-import com.cft.mamontov.imageprocessor.di.name.OkHttpUrlInterceptor;
+import com.cft.mamontov.imageprocessor.utils.AppConstants;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -32,13 +30,6 @@ import static java.util.Collections.singletonList;
 @Module
 public class NetworkModule {
 
-    @OkHttpUrlInterceptor
-    @Provides
-    @Singleton
-    public static UrlInterceptor provideUrlInterceptor(){
-        return UrlInterceptor.get();
-    }
-
     @OkHttpNetworkInteceptor
     @Provides
     @Singleton
@@ -56,12 +47,10 @@ public class NetworkModule {
     @Provides
     @Singleton
     public static OkHttpClient provideOkHttpClient(Cache cache, NetworkChecker networkChecker,
-                                                   @OkHttpNetworkInteceptor List<Interceptor> networkInterceptors,
-                                                   @OkHttpUrlInterceptor UrlInterceptor urlInterceptor) {
+                                                   @OkHttpNetworkInteceptor List<Interceptor> networkInterceptors) {
 
         final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder();
         okHttpBuilder.addInterceptor(new NetworkStateInterceptor(networkChecker));
-        okHttpBuilder.addInterceptor(urlInterceptor);
 
         for (Interceptor networkInterceptor : networkInterceptors) {
             okHttpBuilder.addNetworkInterceptor(networkInterceptor);
@@ -91,7 +80,7 @@ public class NetworkModule {
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(rxAdapterFactory)
-                .baseUrl("https://www.yandex.ru")
+                .baseUrl(AppConstants.BASE_URL)
                 .build();
     }
 
