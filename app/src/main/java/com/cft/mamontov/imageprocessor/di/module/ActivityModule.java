@@ -10,6 +10,6 @@ import dagger.android.ContributesAndroidInjector;
 public abstract class ActivityModule {
 
     @ActivityScoped
-    @ContributesAndroidInjector(modules = {FragmentModule.class, InteractorModule.class})
+    @ContributesAndroidInjector(modules = {FragmentModule.class})
     abstract MainActivity mainActivity();
 }

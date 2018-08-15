@@ -21,9 +21,4 @@ public abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(MainViewModel.class)
     abstract ViewModel userViewModel(MainViewModel userViewModel);
-
-    @Provides
-    static CompositeDisposable provideCompositeDisposable() {
-        return new CompositeDisposable();
-    }
 }

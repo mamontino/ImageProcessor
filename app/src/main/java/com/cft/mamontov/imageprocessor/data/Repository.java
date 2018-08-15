@@ -8,7 +8,7 @@ import com.cft.mamontov.imageprocessor.di.name.Remote;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import io.reactivex.Single;
+import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 
@@ -25,7 +25,7 @@ public class Repository implements ILocalDataSource, INetworkDataSource {
     }
 
     @Override
-    public Single<Response<ResponseBody>> getImageFromUrl(String url) {
+    public Observable<Response<ResponseBody>> getImageFromUrl(String url) {
         return mRemoteDataSource.getImageFromUrl(url);
     }
 }

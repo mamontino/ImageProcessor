@@ -3,16 +3,16 @@ package com.cft.mamontov.imageprocessor.presentation.main;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
-import com.cft.mamontov.imageprocessor.use_case.MainInteractor;
 import com.cft.mamontov.imageprocessor.utils.schedulers.BaseSchedulerProvider;
 import com.cft.mamontov.imageprocessor.utils.tranformation.Transformation;
 
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,16 +22,15 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
-import okhttp3.ResponseBody;
-import retrofit2.Response;
+import io.reactivex.schedulers.Schedulers;
 
 public class MainViewModel extends ViewModel {
 
     private static final int mMinDelay = 5;
     private static final int mMaxDelay = 30;
 
-    private MainInteractor mInteractor;
     private BaseSchedulerProvider mScheduler;
     private CompositeDisposable mDisposable;
     private int mId = 0;
@@ -40,11 +39,11 @@ public class MainViewModel extends ViewModel {
     private Bitmap mCurrentPicture;
     private String mCurrentPicturePath;
     private boolean hasImage;
+    public String url;
 
     @Inject
-    MainViewModel(MainInteractor interactor, BaseSchedulerProvider scheduler,
+    MainViewModel(BaseSchedulerProvider scheduler,
                   CompositeDisposable disposable) {
-        mInteractor = interactor;
         mScheduler = scheduler;
         mDisposable = disposable;
         mList = Collections.synchronizedList(new ArrayList<>());
@@ -66,8 +65,8 @@ public class MainViewModel extends ViewModel {
         hasImage = has;
     }
 
-    public void setCurrentPicture(Bitmap bitmap, int w, int h) {
-        this.mCurrentPicture = getResizedBitmap(bitmap, w, h);
+    public void setCurrentPicture(Bitmap bitmap) {
+        this.mCurrentPicture = bitmap;
         hasImage = true;
         updateCurrentPicture.postValue(mCurrentPicture);
     }
@@ -104,16 +103,6 @@ public class MainViewModel extends ViewModel {
         mList.remove(position);
     }
 
-    public void getImageFromUrl(String url) {
-        mDisposable.add(mInteractor.getImageFromUrl(url)
-                .observeOn(mScheduler.ui())
-                .subscribe(this::onImageLoaded, Throwable::printStackTrace));
-    }
-
-    private void onImageLoaded(Response<ResponseBody> response) {
-        Log.e("ViewModel", "on image loaded");
-    }
-
     private long getLongProcessing() {
         return mMinDelay + (long) (Math.random() * mMaxDelay - mMinDelay);
     }
@@ -142,25 +131,5 @@ public class MainViewModel extends ViewModel {
             }
             return -1;
         }
-    }
-
-    private Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
-        int width = bm.getWidth();
-        int height = bm.getHeight();
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth, scaleHeight);
-        Bitmap resizedBitmap = Bitmap.createBitmap(
-                bm, 0, 0, width, height, matrix, false);
-        bm.recycle();
-        return resizedBitmap;
-
-//        int scaleToUse = 20; // this will be our percentage
-//        Bitmap bmp = BitmapFactory.decodeResource(
-//                context.getResources(), R.drawable.mypng);
-//        int sizeY = screenResolution.y * scaleToUse / 100;
-//        int sizeX = bmp.getWidth() * sizeY / bmp.getHeight();
-//        Bitmap scaled = Bitmap.createScaledBitmap(bmp, sizeX, sizeY, false);
     }
 }

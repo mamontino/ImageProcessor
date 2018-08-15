@@ -103,10 +103,4 @@ public class NetworkModule {
         gsonBuilder.setLenient();
         return gsonBuilder.create();
     }
-
-    @Singleton
-    @Provides
-    public static ApiService provideApi(Retrofit retrofit) {
-        return retrofit.create(ApiService.class);
-    }
 }

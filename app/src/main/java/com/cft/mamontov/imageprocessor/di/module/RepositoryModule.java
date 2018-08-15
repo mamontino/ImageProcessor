@@ -7,6 +7,7 @@ import com.cft.mamontov.imageprocessor.data.db.ILocalDataSource;
 import com.cft.mamontov.imageprocessor.data.db.IPDatabase;
 import com.cft.mamontov.imageprocessor.data.db.LocalDataSource;
 import com.cft.mamontov.imageprocessor.data.db.UserDao;
+import com.cft.mamontov.imageprocessor.data.network.ApiService;
 import com.cft.mamontov.imageprocessor.data.network.INetworkDataSource;
 import com.cft.mamontov.imageprocessor.data.network.RemoteDataSource;
 import com.cft.mamontov.imageprocessor.di.name.Local;
@@ -19,6 +20,8 @@ import javax.inject.Singleton;
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
+import io.reactivex.disposables.CompositeDisposable;
+import retrofit2.Retrofit;
 
 @Module
 abstract public class RepositoryModule {
@@ -50,5 +53,16 @@ abstract public class RepositoryModule {
     @Provides
     static BaseSchedulerProvider provideSchedulers(){
         return SchedulerProvider.getInstance();
+    }
+
+    @Provides
+    static CompositeDisposable provideCompositeDisposable() {
+        return new CompositeDisposable();
+    }
+
+    @Singleton
+    @Provides
+    public static ApiService provideApi(Retrofit retrofit) {
+        return retrofit.create(ApiService.class);
     }
 }

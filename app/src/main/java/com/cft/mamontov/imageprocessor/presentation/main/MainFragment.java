@@ -2,18 +2,24 @@ package com.cft.mamontov.imageprocessor.presentation.main;
 
 import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.FileProvider;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -23,6 +29,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.cft.mamontov.imageprocessor.R;
+import com.cft.mamontov.imageprocessor.bg.DownloadService;
 import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
 import com.cft.mamontov.imageprocessor.databinding.FragmentMainBinding;
 import com.cft.mamontov.imageprocessor.di.IPViewModelFactory;
@@ -32,6 +39,7 @@ import com.cft.mamontov.imageprocessor.utils.BitmapUtils;
 import com.cft.mamontov.imageprocessor.utils.tranformation.InvertColorTransformation;
 import com.cft.mamontov.imageprocessor.utils.tranformation.MirrorTransformation;
 import com.cft.mamontov.imageprocessor.utils.tranformation.RotateTransformation;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,9 +56,13 @@ public class MainFragment extends DaggerFragment{
     public static final String TAG = "MainFragment";
     public static final String MESSAGE_PROGRESS = "MainFragmentLoadImage";
 
+
     private static final int PERMISSION_CODE_CAMERA = 102;
+    private static final int PERMISSION_CODE_LOADER = 103;
     private static final int REQUEST_CAMERA_PICTURE = 99;
     private static final int REQUEST_GALLERY_PICTURE = 88;
+
+    public static final String PROGRESS_UPDATE = "progress_update";
 
     private static final int ROTATE_IMAGE = 110;
     private static final int INVERT_COLOR = 111;
@@ -74,8 +86,7 @@ public class MainFragment extends DaggerFragment{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setRetainInstance(true);
-        Log.e(TAG, "onCreate");
+        setRetainInstance(true);
     }
 
     @Nullable
@@ -95,25 +106,17 @@ public class MainFragment extends DaggerFragment{
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.e(TAG, "onDestroy");
-    }
-
-    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_CAMERA_PICTURE:
                     Bitmap bitmap = BitmapUtils.getBitmap(mViewModel.getCurrentPicturePath());
-                    bitmap = Bitmap.createScaledBitmap(bitmap, mBinding.imageContainer.getWidth(),
-                            mBinding.imageContainer.getHeight(), true);
-                    mViewModel.setCurrentPicture(bitmap, mBinding.mainImage.getWidth(), mBinding.mainImage.getHeight());
+                    mViewModel.setCurrentPicture(bitmap);
                     break;
                 case REQUEST_GALLERY_PICTURE:
                     if (data == null || getActivity() == null) return;
                     Bitmap galleryBitmap = BitmapUtils.getBitmap(data.getData(), getActivity());
-                    mViewModel.setCurrentPicture(galleryBitmap, mBinding.imageContainer.getWidth(), mBinding.imageContainer.getHeight());
+                    mViewModel.setCurrentPicture(galleryBitmap);
             }
         }
     }
@@ -129,13 +132,36 @@ public class MainFragment extends DaggerFragment{
             } else {
                 Log.e(TAG, getResources().getString(R.string.camera_permission_denied));
             }
+        }else if (requestCode == PERMISSION_CODE_LOADER){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.e(TAG, getResources().getString(R.string.camera_permission_granted));
+                registerReceiver();
+                startImageDownload();
+            } else {
+                Log.e(TAG, getResources().getString(R.string.camera_permission_denied));
+            }
+        }
+    }
+
+    private void registerReceiver() {
+        LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(getContext());
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(PROGRESS_UPDATE);
+        bManager.registerReceiver(getLoadingReceiver, intentFilter);
+    }
+
+    private void startImageDownload() {
+        if (getActivity() != null){
+            Intent intent = new Intent(getActivity(), DownloadService.class);
+            intent.putExtra("Service", mViewModel.url);
+            getActivity().startService(intent);
         }
     }
 
     public void loadImage(int requestCode) {
         switch (requestCode) {
             case ChooseFragment.REQUEST_CODE_CAMERA:
-                requestCameraPermission();
+                requestPermission(PERMISSION_CODE_CAMERA);
                 break;
             case ChooseFragment.REQUEST_CODE_GALLERY:
                 loadPhotoFromGallery();
@@ -144,23 +170,39 @@ public class MainFragment extends DaggerFragment{
     }
 
     public void loadImage(String uri) {
-        mViewModel.getImageFromUrl(uri);
+        mViewModel.url = uri;
+        requestPermission(PERMISSION_CODE_LOADER);
     }
 
-    private void requestCameraPermission() {
-        if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-            Snackbar.make(mCoordinator, R.string.camera_access_required,
-                    Snackbar.LENGTH_INDEFINITE).setAction(R.string.ok, view ->
+    private void requestPermission(int mode) {
+        switch (mode){
+            case PERMISSION_CODE_CAMERA:
+                if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                    Snackbar.make(mCoordinator, R.string.camera_access_required,
+                            Snackbar.LENGTH_INDEFINITE).setAction(R.string.ok, view ->
+                            requestPermissions(new String[]{
+                                            Manifest.permission.CAMERA,
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                    PERMISSION_CODE_CAMERA)).show();
+
+                } else {
                     requestPermissions(new String[]{
                                     Manifest.permission.CAMERA,
                                     Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            PERMISSION_CODE_CAMERA)).show();
+                            PERMISSION_CODE_CAMERA);
+                }
+                break;
+            case PERMISSION_CODE_LOADER:
+                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    Snackbar.make(mCoordinator, R.string.camera_access_required,
+                            Snackbar.LENGTH_INDEFINITE).setAction(R.string.ok, view ->
+                            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                    PERMISSION_CODE_LOADER)).show();
 
-        } else {
-            requestPermissions(new String[]{
-                            Manifest.permission.CAMERA,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    PERMISSION_CODE_CAMERA);
+                } else {
+                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            PERMISSION_CODE_LOADER);
+                }
         }
     }
 
@@ -173,24 +215,21 @@ public class MainFragment extends DaggerFragment{
                 mPhotoFile = BitmapUtils.createImageFile(getActivity());
                 mViewModel.setCurrentPicturePath(Uri.decode(mPhotoFile.getAbsolutePath()));
                 BitmapUtils.addPhotoToGallery(mViewModel.getCurrentPicturePath(), getActivity());
-            } catch (IOException ex) {
+            } catch (IOException e) {
                 Toast.makeText(getContext(), R.string.error_creating_file,
                         Toast.LENGTH_SHORT).show();
                 return;
             }
-            Uri photoURI = FileProvider.getUriForFile(getActivity(),
-                    "com.cft.mamontov.fileprovider", mPhotoFile);
+            Uri photoURI = FileProvider.getUriForFile(getActivity(), "com.cft.mamontov.fileprovider", mPhotoFile);
             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
             startActivityForResult(cameraIntent, REQUEST_CAMERA_PICTURE);
         }
     }
 
     private void loadPhotoFromGallery() {
-        Intent takeGalleryIntent = new Intent(Intent.ACTION_PICK,
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent takeGalleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         takeGalleryIntent.setType("image/*");
-        startActivityForResult(Intent.createChooser(takeGalleryIntent,
-                getString(R.string.choose_new_image_message)), REQUEST_GALLERY_PICTURE);
+        startActivityForResult(Intent.createChooser(takeGalleryIntent, getString(R.string.choose_new_image_message)), REQUEST_GALLERY_PICTURE);
     }
 
     private void showExifFragment() {
@@ -268,8 +307,7 @@ public class MainFragment extends DaggerFragment{
         mAdapter.setOnItemClickListener(new ImageListAdapter.OnItemClickListener() {
             @Override
             public void onCurrentPictureChanged(int position) {
-                mViewModel.setCurrentPicture(mAdapter.getCurrentItem(position).getBitmap(),
-                        mBinding.mainImage.getWidth(), mBinding.mainImage.getHeight());
+                mViewModel.setCurrentPicture(mAdapter.getCurrentItem(position).getBitmap());
             }
 
             @Override
@@ -288,4 +326,19 @@ public class MainFragment extends DaggerFragment{
             mAdapter.addItems(mViewModel.getList());
         }
     }
+
+    private BroadcastReceiver getLoadingReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(PROGRESS_UPDATE)) {
+                boolean downloadComplete = intent.getBooleanExtra("downloadComplete", false);
+                if (downloadComplete) {
+                    Toast.makeText(getContext(), "File download completed", Toast.LENGTH_SHORT).show();
+                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + File.separator +
+                            "journaldev-image-downloaded.jpg");
+                    Picasso.get().load(file).into(mBinding.mainImage);
+                }
+            }
+        }
+    };
 }

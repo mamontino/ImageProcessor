@@ -1,16 +1,20 @@
 package com.cft.mamontov.imageprocessor.bg;
 
-import android.app.IntentService;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Environment;
+import android.os.StrictMode;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
-import com.cft.mamontov.imageprocessor.R;
-import com.cft.mamontov.imageprocessor.data.models.NetworkImage;
+import com.cft.mamontov.imageprocessor.data.Repository;
 import com.cft.mamontov.imageprocessor.presentation.main.MainFragment;
+import com.cft.mamontov.imageprocessor.utils.BitmapUtils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -19,114 +23,118 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import javax.inject.Inject;
+
+import dagger.android.DaggerIntentService;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
+import okio.BufferedSink;
+import okio.Okio;
+import retrofit2.Response;
 
-public class DownloadService extends IntentService {
+public class DownloadService extends DaggerIntentService {
 
-    public DownloadService() {
-        super("Download Service");
-    }
+    @Inject
+    Repository mData;
 
     private NotificationCompat.Builder notificationBuilder;
     private NotificationManager notificationManager;
-    private int totalFileSize;
+
+    public DownloadService() {
+        super("Service");
+    }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        String url = intent.getStringExtra("Service");
+        if (url.isEmpty()) return;
+        initNotifications();
+        initRetrofit(url);
+    }
+
+    private void initNotifications() {
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationBuilder = new NotificationCompat.Builder(this, "Download Service")
-                .setSmallIcon(R.drawable.ic_file_download)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel("id", "an", NotificationManager.IMPORTANCE_LOW);
+            notificationChannel.setDescription("no sound");
+            notificationChannel.setSound(null, null);
+            notificationChannel.enableLights(false);
+            notificationChannel.setLightColor(Color.BLUE);
+            notificationChannel.enableVibration(false);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+
+        notificationBuilder = new NotificationCompat.Builder(this, "id")
+                .setSmallIcon(android.R.drawable.stat_sys_download)
                 .setContentTitle("Download")
-                .setContentText("Downloading File")
+                .setContentText("Downloading Image")
+                .setDefaults(0)
                 .setAutoCancel(true);
         notificationManager.notify(0, notificationBuilder.build());
-        initDownload();
     }
 
-    private void initDownload() {
+    private void initRetrofit(String url) {
+        Log.e("Service", url);
+        CompositeDisposable disposable = new CompositeDisposable();
+        disposable.add(mData.getImageFromUrl(url)
+                .subscribeOn(Schedulers.io())
+                .flatMap((Response<ResponseBody> response) -> {
+                    try {
+                        ResponseBody body = response.body();
+                        String fileName = "dtykdeuk";
 
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl(https://download.learn2crack.com/)
-//                .build();
-//
-//        RetrofitInterface retrofitInterface = retrofit.create(RetrofitInterface.class);
-//
-//        Call<ResponseBody> request = retrofitInterface.downloadFile();
-//        try {
-//
-//            downloadFile(request.execute().body());
-//
-//        } catch (IOException e) {
-//
-//            e.printStackTrace();
-//            Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_SHORT).show();
-//
-//        }
+                        File file = new File(Environment
+                                .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                                .getAbsoluteFile(), fileName);
+
+                        BufferedSink sink = Okio.buffer(Okio.sink(file));
+                        sink.writeAll(body.source());
+                        sink.close();
+                        return Observable.just(file);
+                    } catch (IOException e) {
+                        return Observable.error(e);
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onSuccess, this::onError));
     }
 
-    private void downloadFile(ResponseBody body) throws IOException {
-
-        int count;
-        byte data[] = new byte[1024 * 4];
-        long fileSize = body.contentLength();
-        InputStream bis = new BufferedInputStream(body.byteStream(), 1024 * 8);
-        File outputFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "file.zip");
-        OutputStream output = new FileOutputStream(outputFile);
-        long total = 0;
-        long startTime = System.currentTimeMillis();
-        int timeCount = 1;
-        while ((count = bis.read(data)) != -1) {
-
-            total += count;
-            totalFileSize = (int) (fileSize / (Math.pow(1024, 2)));
-            double current = Math.round(total / (Math.pow(1024, 2)));
-
-            int progress = (int) ((total * 100) / fileSize);
-
-            long currentTime = System.currentTimeMillis() - startTime;
-
-            NetworkImage download = new NetworkImage();
-            download.setTotalFileSize(totalFileSize);
-
-            if (currentTime > 1000 * timeCount) {
-
-                download.setCurrentFileSize((int) current);
-                download.setProgress(progress);
-                sendNotification(download);
-                timeCount++;
-            }
-
-            output.write(data, 0, count);
-        }
-        onDownloadComplete();
-        output.flush();
-        output.close();
-        bis.close();
-
+    private void onSuccess(File file) {
+        Log.e("Service", "onSuccess");
+        onDownloadComplete(true, file.getAbsolutePath());
     }
 
-    private void sendNotification(NetworkImage download) {
+    private void onError(Throwable throwable) {
+        Log.e("Throwable: ", throwable.getLocalizedMessage());
+        throwable.printStackTrace();
+    }
 
-        sendIntent(download);
-        notificationBuilder.setProgress(100, download.getProgress(), false);
-        notificationBuilder.setContentText("Downloading file " + download.getCurrentFileSize() + "/" + totalFileSize + " MB");
+    private void updateNotification(int currentProgress) {
+        notificationBuilder.setProgress(100, currentProgress, false);
+        notificationBuilder.setContentText("Downloaded: " + currentProgress + "%");
         notificationManager.notify(0, notificationBuilder.build());
     }
 
-    private void sendIntent(NetworkImage download) {
-        Intent intent = new Intent(MainFragment.MESSAGE_PROGRESS);
-        intent.putExtra("download", download);
+    private void sendProgressUpdate(boolean downloadComplete, String file) {
+        Intent intent = new Intent(MainFragment.PROGRESS_UPDATE);
+        intent.putExtra("downloadComplete", downloadComplete);
+        intent.putExtra("fileName", file);
         LocalBroadcastManager.getInstance(DownloadService.this).sendBroadcast(intent);
     }
 
-    private void onDownloadComplete() {
-        NetworkImage download = new NetworkImage();
-        download.setProgress(100);
-        sendIntent(download);
-
+    private void onDownloadComplete(boolean downloadComplete, String file) {
+        sendProgressUpdate(downloadComplete, file);
         notificationManager.cancel(0);
         notificationBuilder.setProgress(0, 0, false);
-        notificationBuilder.setContentText("File Downloaded");
+        notificationBuilder.setContentText("Image Download Complete");
         notificationManager.notify(0, notificationBuilder.build());
     }
 

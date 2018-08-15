@@ -34,7 +34,7 @@ public class BitmapUtils {
     }
 
     public static File createImageFile(Context context) throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmm", Locale.getDefault()).format(new Date());
         String imageFileName = "IMAGE_PROCESSOR_" + timeStamp + "_";
         File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         return File.createTempFile(imageFileName, ".jpg", storageDir);
@@ -100,7 +100,7 @@ public class BitmapUtils {
         return stringUrl;
     }
 
-    private static Bitmap storeThumbnail(ContentResolver cr, Bitmap source, long id, float width,
+    public static Bitmap storeThumbnail(ContentResolver cr, Bitmap source, long id, float width,
                                          float height, int kind) {
 
         Matrix matrix = new Matrix();
@@ -161,11 +161,10 @@ public class BitmapUtils {
             } else {
                 actualHeight = (int) maxHeight;
                 actualWidth = (int) maxWidth;
-
             }
         }
 
-        options.inSampleSize = calculateInSampleSize(options, actualWidth, actualHeight);
+        options.inSampleSize = calculateSize(options, actualWidth, actualHeight);
         options.inJustDecodeBounds = false;
         options.inDither = false;
         options.inPurgeable = true;
@@ -196,7 +195,7 @@ public class BitmapUtils {
         canvas.setMatrix(scaleMatrix);
         canvas.drawBitmap(bmp, middleX - bmp.getWidth() / 2, middleY - bmp.getHeight() / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
 
-        ExifInterface exif = null;
+        ExifInterface exif;
         try {
             exif = new ExifInterface(imagePath);
             int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0);
@@ -217,12 +216,10 @@ public class BitmapUtils {
 
         byte[] byteArray = out.toByteArray();
 
-        Bitmap updatedBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
-
-        return updatedBitmap;
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
     }
 
-    private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    private static int calculateSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         final int height = options.outHeight;
         final int width = options.outWidth;
         int inSampleSize = 1;
