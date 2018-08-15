@@ -12,8 +12,8 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerAppCompatActivity;
 
-public class MainActivity extends DaggerAppCompatActivity implements ChooseFragment.OnSourceListener,
-        LoadFragment.OnUrlListener {
+public class MainActivity extends DaggerAppCompatActivity implements
+        ChooseFragment.OnSourceListener, LoadFragment.OnUrlListener {
 
     @Inject
     MainFragment mMainFragment;

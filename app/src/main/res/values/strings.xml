@@ -32,6 +32,7 @@
     <string name="select_action">Select action</string>
     <string name="error_empty_bitmap">Empty bitmap. Retry again.</string>
     <string name="error_creating_file">Photo file can\'t be created, please try again</string>
+    <string name="success_file_download_complete">File download completed</string>
     <!--FragmentMain-->
 
 </resources>

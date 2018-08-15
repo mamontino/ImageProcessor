@@ -1,6 +1,6 @@
 package com.cft.mamontov.imageprocessor.di.module;
 
-import com.cft.mamontov.imageprocessor.bg.DownloadService;
+import com.cft.mamontov.imageprocessor.bg.LoadingService;
 import com.cft.mamontov.imageprocessor.di.scope.ServiceScoped;
 
 import dagger.Module;
@@ -11,5 +11,5 @@ public abstract class ServiceModule {
 
     @ServiceScoped
     @ContributesAndroidInjector
-    abstract DownloadService provideDownloadService();
+    abstract LoadingService provideDownloadService();
 }

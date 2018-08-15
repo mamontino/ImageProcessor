@@ -11,8 +11,6 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,7 +27,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.cft.mamontov.imageprocessor.R;
-import com.cft.mamontov.imageprocessor.bg.DownloadService;
+import com.cft.mamontov.imageprocessor.bg.LoadingService;
 import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
 import com.cft.mamontov.imageprocessor.databinding.FragmentMainBinding;
 import com.cft.mamontov.imageprocessor.di.IPViewModelFactory;
@@ -39,7 +37,6 @@ import com.cft.mamontov.imageprocessor.utils.BitmapUtils;
 import com.cft.mamontov.imageprocessor.utils.tranformation.InvertColorTransformation;
 import com.cft.mamontov.imageprocessor.utils.tranformation.MirrorTransformation;
 import com.cft.mamontov.imageprocessor.utils.tranformation.RotateTransformation;
-import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,15 +51,13 @@ import static android.app.Activity.RESULT_OK;
 public class MainFragment extends DaggerFragment{
 
     public static final String TAG = "MainFragment";
-    public static final String MESSAGE_PROGRESS = "MainFragmentLoadImage";
-
 
     private static final int PERMISSION_CODE_CAMERA = 102;
     private static final int PERMISSION_CODE_LOADER = 103;
     private static final int REQUEST_CAMERA_PICTURE = 99;
     private static final int REQUEST_GALLERY_PICTURE = 88;
 
-    public static final String PROGRESS_UPDATE = "progress_update";
+    public static final String PROGRESS_UPDATE = "PROGRESS_UPDATE";
 
     private static final int ROTATE_IMAGE = 110;
     private static final int INVERT_COLOR = 111;
@@ -152,8 +147,8 @@ public class MainFragment extends DaggerFragment{
 
     private void startImageDownload() {
         if (getActivity() != null){
-            Intent intent = new Intent(getActivity(), DownloadService.class);
-            intent.putExtra("Service", mViewModel.url);
+            Intent intent = new Intent(getActivity(), LoadingService.class);
+            intent.putExtra(LoadingService.EXTRA_SERVICE_URL, mViewModel.url);
             getActivity().startService(intent);
         }
     }
@@ -178,7 +173,7 @@ public class MainFragment extends DaggerFragment{
         switch (mode){
             case PERMISSION_CODE_CAMERA:
                 if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                    Snackbar.make(mCoordinator, R.string.camera_access_required,
+                    Snackbar.make(mCoordinator,getResources().getString(R.string.camera_access_required),
                             Snackbar.LENGTH_INDEFINITE).setAction(R.string.ok, view ->
                             requestPermissions(new String[]{
                                             Manifest.permission.CAMERA,
@@ -194,7 +189,7 @@ public class MainFragment extends DaggerFragment{
                 break;
             case PERMISSION_CODE_LOADER:
                 if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    Snackbar.make(mCoordinator, R.string.camera_access_required,
+                    Snackbar.make(mCoordinator, getResources().getString(R.string.camera_access_required),
                             Snackbar.LENGTH_INDEFINITE).setAction(R.string.ok, view ->
                             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                                     PERMISSION_CODE_LOADER)).show();
@@ -220,16 +215,19 @@ public class MainFragment extends DaggerFragment{
                         Toast.LENGTH_SHORT).show();
                 return;
             }
-            Uri photoURI = FileProvider.getUriForFile(getActivity(), "com.cft.mamontov.fileprovider", mPhotoFile);
+            Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                    "com.cft.mamontov.fileprovider", mPhotoFile);
             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
             startActivityForResult(cameraIntent, REQUEST_CAMERA_PICTURE);
         }
     }
 
     private void loadPhotoFromGallery() {
-        Intent takeGalleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent takeGalleryIntent = new Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         takeGalleryIntent.setType("image/*");
-        startActivityForResult(Intent.createChooser(takeGalleryIntent, getString(R.string.choose_new_image_message)), REQUEST_GALLERY_PICTURE);
+        startActivityForResult(Intent.createChooser(takeGalleryIntent,
+                getString(R.string.choose_new_image_message)), REQUEST_GALLERY_PICTURE);
     }
 
     private void showExifFragment() {
@@ -320,7 +318,8 @@ public class MainFragment extends DaggerFragment{
     private void prepareSubscribers() {
         mViewModel.updateProcessing.observe(this, this::updateProcessing);
         mViewModel.updateCurrentPicture.observe(this, this::setCurrentImage);
-        mViewModel.getItem.observe(this, this::addItem);
+        mViewModel.postItem.observe(this, this::addItem);
+        mViewModel.postError.observe(this, this::showError);
         setCurrentImage(mViewModel.getCurrentPicture());
         if (mViewModel.getList() != null) {
             mAdapter.addItems(mViewModel.getList());
@@ -331,12 +330,14 @@ public class MainFragment extends DaggerFragment{
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(PROGRESS_UPDATE)) {
-                boolean downloadComplete = intent.getBooleanExtra("downloadComplete", false);
+                boolean downloadComplete = intent.getBooleanExtra(
+                        LoadingService.EXTRA_SERVICE_COMPLETE, false);
+                String path = intent.getStringExtra(LoadingService.EXTRA_SERVICE_FILE_NAME);
                 if (downloadComplete) {
-                    Toast.makeText(getContext(), "File download completed", Toast.LENGTH_SHORT).show();
-                    File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath() + File.separator +
-                            "journaldev-image-downloaded.jpg");
-                    Picasso.get().load(file).into(mBinding.mainImage);
+                    Toast.makeText(getContext(), R.string.success_file_download_complete,
+                            Toast.LENGTH_SHORT).show();
+                    Bitmap bitmap = BitmapUtils.getBitmap(path);
+                    mViewModel.setCurrentPicture(bitmap);
                 }
             }
         }
