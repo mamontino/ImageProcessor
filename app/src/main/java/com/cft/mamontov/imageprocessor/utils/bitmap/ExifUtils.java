@@ -1,4 +1,4 @@
-package com.cft.mamontov.imageprocessor.utils;
+package com.cft.mamontov.imageprocessor.utils.bitmap;
 
 import android.content.ContentResolver;
 import android.net.Uri;
@@ -7,6 +7,7 @@ import android.support.media.ExifInterface;
 import android.util.Log;
 
 import com.cft.mamontov.imageprocessor.data.models.ExifInformation;
+import com.cft.mamontov.imageprocessor.utils.AppConstants;
 
 import java.io.Closeable;
 import java.io.File;

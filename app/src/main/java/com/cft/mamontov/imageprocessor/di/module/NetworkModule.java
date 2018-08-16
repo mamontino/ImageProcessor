@@ -2,8 +2,8 @@ package com.cft.mamontov.imageprocessor.di.module;
 
 import android.app.Application;
 
-import com.cft.mamontov.imageprocessor.utils.ErrorHandler;
-import com.cft.mamontov.imageprocessor.utils.NetworkChecker;
+import com.cft.mamontov.imageprocessor.utils.network.ErrorHandler;
+import com.cft.mamontov.imageprocessor.utils.network.NetworkChecker;
 import com.cft.mamontov.imageprocessor.data.network.interceptor.NetworkStateInterceptor;
 import com.cft.mamontov.imageprocessor.data.network.interceptor.UpdateProgressInterceptor;
 import com.cft.mamontov.imageprocessor.di.name.OkHttpNetworkInteceptor;

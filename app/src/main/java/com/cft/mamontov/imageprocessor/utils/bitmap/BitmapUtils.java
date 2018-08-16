@@ -1,4 +1,4 @@
-package com.cft.mamontov.imageprocessor.utils;
+package com.cft.mamontov.imageprocessor.utils.bitmap;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;

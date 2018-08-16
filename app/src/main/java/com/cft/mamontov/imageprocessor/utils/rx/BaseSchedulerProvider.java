@@ -1,4 +1,4 @@
-package com.cft.mamontov.imageprocessor.utils.schedulers;
+package com.cft.mamontov.imageprocessor.utils.rx;
 
 import android.support.annotation.NonNull;
 

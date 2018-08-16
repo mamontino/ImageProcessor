@@ -5,7 +5,7 @@ import android.arch.lifecycle.ViewModel;
 import android.graphics.Bitmap;
 
 import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
-import com.cft.mamontov.imageprocessor.utils.schedulers.BaseSchedulerProvider;
+import com.cft.mamontov.imageprocessor.utils.rx.BaseSchedulerProvider;
 import com.cft.mamontov.imageprocessor.utils.tranformation.Transformation;
 
 import java.util.ArrayList;

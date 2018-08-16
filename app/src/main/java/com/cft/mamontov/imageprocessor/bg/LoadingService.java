@@ -14,13 +14,13 @@ import android.widget.Toast;
 import com.cft.mamontov.imageprocessor.R;
 import com.cft.mamontov.imageprocessor.data.Repository;
 import com.cft.mamontov.imageprocessor.data.models.ErrorResponse;
-import com.cft.mamontov.imageprocessor.utils.ErrorHandler;
+import com.cft.mamontov.imageprocessor.utils.network.ErrorHandler;
 import com.cft.mamontov.imageprocessor.exceptions.NoNetworkException;
 import com.cft.mamontov.imageprocessor.presentation.main.MainFragment;
-import com.cft.mamontov.imageprocessor.utils.BitmapUtils;
+import com.cft.mamontov.imageprocessor.utils.bitmap.BitmapUtils;
 import com.cft.mamontov.imageprocessor.utils.events.ProgressEvent;
 import com.cft.mamontov.imageprocessor.utils.events.RxBus;
-import com.cft.mamontov.imageprocessor.utils.schedulers.BaseSchedulerProvider;
+import com.cft.mamontov.imageprocessor.utils.rx.BaseSchedulerProvider;
 
 import java.io.File;
 import java.io.IOException;

@@ -2,7 +2,7 @@ package com.cft.mamontov.imageprocessor.data.network.interceptor;
 
 import android.support.annotation.NonNull;
 
-import com.cft.mamontov.imageprocessor.utils.NetworkChecker;
+import com.cft.mamontov.imageprocessor.utils.network.NetworkChecker;
 import com.cft.mamontov.imageprocessor.exceptions.NoNetworkException;
 
 import java.io.IOException;

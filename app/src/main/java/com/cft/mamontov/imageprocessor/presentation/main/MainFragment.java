@@ -33,7 +33,7 @@ import com.cft.mamontov.imageprocessor.databinding.FragmentMainBinding;
 import com.cft.mamontov.imageprocessor.di.IPViewModelFactory;
 import com.cft.mamontov.imageprocessor.di.scope.ActivityScope;
 import com.cft.mamontov.imageprocessor.presentation.choose.ChooseFragment;
-import com.cft.mamontov.imageprocessor.utils.BitmapUtils;
+import com.cft.mamontov.imageprocessor.utils.bitmap.BitmapUtils;
 import com.cft.mamontov.imageprocessor.utils.tranformation.InvertColorTransformation;
 import com.cft.mamontov.imageprocessor.utils.tranformation.MirrorTransformation;
 import com.cft.mamontov.imageprocessor.utils.tranformation.RotateTransformation;

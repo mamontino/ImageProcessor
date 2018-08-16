@@ -6,17 +6,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="@dimen/activity_base_padding">
+        android:padding="@dimen/activity_horizontal_margin">
 
         <EditText
             android:id="@+id/fragment_load_et"
             android:layout_width="244dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginEnd="@dimen/activity_element_padding"
-            android:layout_marginRight="@dimen/activity_element_padding"
-            android:layout_toLeftOf="@+id/fragment_load_btn"
             android:layout_toStartOf="@+id/fragment_load_btn"
             android:hint="@string/fragment_load_url_hint"
             android:inputType="textUri"
@@ -26,7 +22,6 @@
             android:id="@+id/fragment_load_btn"
             style="@style/img_button_source"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:contentDescription="@string/fragment_load_btn_text"
             app:srcCompat="@drawable/ic_file_download" />
 

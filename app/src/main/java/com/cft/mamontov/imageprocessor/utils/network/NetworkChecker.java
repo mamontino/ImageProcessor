@@ -1,4 +1,4 @@
-package com.cft.mamontov.imageprocessor.utils;
+package com.cft.mamontov.imageprocessor.utils.network;
 
 import android.content.Context;
 import android.net.ConnectivityManager;

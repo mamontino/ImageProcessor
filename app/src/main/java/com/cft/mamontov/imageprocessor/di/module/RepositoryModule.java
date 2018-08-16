@@ -13,8 +13,8 @@ import com.cft.mamontov.imageprocessor.data.network.RemoteDataSource;
 import com.cft.mamontov.imageprocessor.di.name.Local;
 import com.cft.mamontov.imageprocessor.di.name.Remote;
 import com.cft.mamontov.imageprocessor.utils.events.RxBus;
-import com.cft.mamontov.imageprocessor.utils.schedulers.BaseSchedulerProvider;
-import com.cft.mamontov.imageprocessor.utils.schedulers.SchedulerProvider;
+import com.cft.mamontov.imageprocessor.utils.rx.BaseSchedulerProvider;
+import com.cft.mamontov.imageprocessor.utils.rx.SchedulerProvider;
 
 import javax.inject.Singleton;
 
