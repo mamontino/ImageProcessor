@@ -12,15 +12,15 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import com.cft.mamontov.imageprocessor.R;
-import com.cft.mamontov.imageprocessor.data.Repository;
 import com.cft.mamontov.imageprocessor.data.models.ErrorResponse;
-import com.cft.mamontov.imageprocessor.interactors.ILoadInteractor;
-import com.cft.mamontov.imageprocessor.utils.network.ErrorHandler;
 import com.cft.mamontov.imageprocessor.exceptions.NoNetworkException;
+import com.cft.mamontov.imageprocessor.interactors.ILoadInteractor;
 import com.cft.mamontov.imageprocessor.presentation.main.MainFragment;
+import com.cft.mamontov.imageprocessor.utils.AppConstants;
 import com.cft.mamontov.imageprocessor.utils.bitmap.BitmapUtils;
 import com.cft.mamontov.imageprocessor.utils.events.ProgressEvent;
 import com.cft.mamontov.imageprocessor.utils.events.RxBus;
+import com.cft.mamontov.imageprocessor.utils.network.ErrorHandler;
 import com.cft.mamontov.imageprocessor.utils.rx.BaseSchedulerProvider;
 
 import java.io.File;
@@ -51,12 +51,16 @@ public class LoadingService extends DaggerIntentService {
 
     @Inject
     ILoadInteractor mData;
+
     @Inject
     CompositeDisposable mDisposable;
+
     @Inject
     BaseSchedulerProvider mScheduler;
+
     @Inject
     RxBus mRxBus;
+
     @Inject
     ErrorHandler mErrorHandler;
 
@@ -133,7 +137,10 @@ public class LoadingService extends DaggerIntentService {
     }
 
     private void onSuccess(File file) {
-        BitmapUtils.addPhotoToGallery(file.getAbsolutePath(), this);
+//        BitmapUtils.addPhotoToGallery(file.getAbsolutePath(), this);
+        BitmapUtils.insertImage(getContentResolver(),
+                BitmapUtils.getBitmap(file.getAbsolutePath()),
+                AppConstants.APP_NAME, AppConstants.APP_NAME);
         onDownloadComplete(file.getAbsolutePath());
     }
 

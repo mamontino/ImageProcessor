@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
+import android.support.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -16,12 +17,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.media.ExifInterface;
 import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +43,9 @@ import com.cft.mamontov.imageprocessor.utils.tranformation.RotateTransformation;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -91,7 +93,6 @@ public class MainFragment extends DaggerFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false);
         prepareViews();
-        requestPermission();
         mViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MainViewModel.class);
         return mBinding.getRoot();
     }
@@ -101,6 +102,7 @@ public class MainFragment extends DaggerFragment {
         super.onViewCreated(view, savedInstanceState);
         registerForContextMenu(mBinding.fragmentMainRv);
         prepareSubscribers();
+        requestPermission();
     }
 
     @Override
@@ -128,7 +130,7 @@ public class MainFragment extends DaggerFragment {
                 && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
             Log.e(TAG, getResources().getString(R.string.camera_permission_granted));
         } else {
-            Log.e(TAG, getResources().getString(R.string.camera_permission_denied));
+            Toast.makeText(getContext(), "You dont have permission", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -149,7 +151,7 @@ public class MainFragment extends DaggerFragment {
         }
     }
 
-    public void loadImage(int requestCode) {
+    void loadImage(int requestCode) {
         switch (requestCode) {
             case ChooseFragment.REQUEST_CODE_CAMERA:
                 loadImageFromCamera();
@@ -160,7 +162,7 @@ public class MainFragment extends DaggerFragment {
         }
     }
 
-    public void loadImage(String uri) {
+    void loadImage(String uri) {
         mViewModel.setUrl(uri);
         registerReceiver();
         startImageDownload();
@@ -241,12 +243,10 @@ public class MainFragment extends DaggerFragment {
     private void setCurrentImage(Bitmap bitmap) {
         if (mViewModel.isHasImage()) {
             mBinding.addImageButton.setVisibility(View.GONE);
-            mBinding.fragmentMainBtnExif.setVisibility(View.VISIBLE);
             mBinding.mainImage.setVisibility(View.VISIBLE);
             mBinding.mainImage.setImageBitmap(bitmap);
         } else {
             mBinding.addImageButton.setVisibility(View.VISIBLE);
-            mBinding.fragmentMainBtnExif.setVisibility(View.GONE);
             mBinding.mainImage.setVisibility(View.GONE);
         }
     }
@@ -256,25 +256,33 @@ public class MainFragment extends DaggerFragment {
     }
 
     private void updateProcessing(TransformedImage image) {
+        saveImageAttributes(image);
         mAdapter.updateProcessing(image);
+    }
+
+    private void saveImageAttributes(TransformedImage image) {
         if (image.getBitmap() != null && getActivity() != null) {
-            File mPhotoFile;
-            try {
-                mPhotoFile = BitmapUtils.createImageFile(getActivity());
-                String path = Uri.decode(mPhotoFile.getAbsolutePath());
+            Uri uri = BitmapUtils.insertImage(getActivity().getContentResolver(), image.getBitmap(),
+                    AppConstants.APP_NAME, AppConstants.APP_NAME);
+            String path = BitmapUtils.getPathFromUri(uri, getContext());
+            if (!path.isEmpty()) {
                 image.setPath(path);
-                BitmapUtils.addPhotoToGallery(path, getActivity());
+                mViewModel.saveImageToDatabase(image);
+                Log.e("ImagePath: ", path);
                 try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
+                    String time = sdf.format(new Date());
                     ExifInterface exif = new ExifInterface(path);
+                    exif.setAttribute(ExifInterface.TAG_DATETIME, time);
+                    exif.setAttribute(ExifInterface.TAG_MAKE, AppConstants.APP_NAME);
+                    exif.setAttribute(ExifInterface.TAG_CAMARA_OWNER_NAME, AppConstants.APP_NAME);
                     exif.setAttribute(ExifInterface.TAG_ARTIST, AppConstants.APP_NAME);
+                    exif.setAttribute(ExifInterface.TAG_IMAGE_DESCRIPTION, AppConstants.APP_NAME);
                     exif.saveAttributes();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Log.e("Error loading file: " , e.getLocalizedMessage());
+                    Log.e("Error loading file: ", e.getLocalizedMessage());
                 }
-            } catch (IOException e) {
-                Toast.makeText(getContext(), R.string.error_creating_file,
-                        Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -286,19 +294,18 @@ public class MainFragment extends DaggerFragment {
     private void prepareViews() {
         mCoordinator = mBinding.getRoot().findViewById(R.id.main_coordinator);
         mBinding.addImageButton.setOnClickListener(v -> showChooseFragment());
+        mBinding.fragmentMainBtnInvertColors.setOnClickListener(v -> transformImage(INVERT_COLOR));
+        mBinding.fragmentMainBtnMirrorImage.setOnClickListener(v -> transformImage(MIRROR_IMAGE));
+        mBinding.fragmentMainBtnRotate.setOnClickListener(v -> transformImage(ROTATE_IMAGE));
         mBinding.mainImage.setOnClickListener(v -> showChooseFragment());
         mBinding.mainImage.setOnLongClickListener(v -> {
             if (getActivity() != null) {
                 ExifFragment.newInstance(mViewModel.getCurrentPicturePath()).show(getActivity()
                         .getSupportFragmentManager(), MainFragment.TAG);
-                Log.e("show exif: ", mViewModel.getCurrentPicturePath());
                 return true;
             }
             return false;
         });
-        mBinding.fragmentMainBtnInvertColors.setOnClickListener(v -> transformImage(INVERT_COLOR));
-        mBinding.fragmentMainBtnMirrorImage.setOnClickListener(v -> transformImage(MIRROR_IMAGE));
-        mBinding.fragmentMainBtnRotate.setOnClickListener(v -> transformImage(ROTATE_IMAGE));
         prepareRecyclerView();
     }
 
@@ -341,6 +348,7 @@ public class MainFragment extends DaggerFragment {
                 boolean downloadComplete = intent.getBooleanExtra(
                         LoadingService.EXTRA_SERVICE_COMPLETE, false);
                 String path = intent.getStringExtra(LoadingService.EXTRA_SERVICE_FILE_NAME);
+
                 if (downloadComplete) {
                     Toast.makeText(getContext(), R.string.success_file_download_complete,
                             Toast.LENGTH_SHORT).show();

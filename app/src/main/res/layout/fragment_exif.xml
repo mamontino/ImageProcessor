@@ -5,6 +5,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:background="@color/grey_dark"
         android:padding="@dimen/activity_horizontal_margin">
 
         <TextView
@@ -12,14 +13,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
-            android:text=" --- Exif information ---"/>
+            android:text="@string/exif_information_title"
+            android:textColor="@color/text_white"
+            android:textSize="@dimen/text_size_base"/>
 
         <TextView
             android:id="@+id/item_exif_desc"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:textColor="@color/text_white"
             android:layout_marginTop="@dimen/activity_horizontal_margin"
-            android:text=";oljbafg;ojbafpgobjafgp;hjabfgp;bhj"
             android:gravity="start" />
     </LinearLayout>
 </layout>

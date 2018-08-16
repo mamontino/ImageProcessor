@@ -18,7 +18,7 @@ import com.cft.mamontov.imageprocessor.databinding.ItemImageBinding;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHolder> {
+class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.ItemViewHolder> {
 
     private static final int FIRST_VIEW_TYPE = 1;
     private static final int SECOND_VIEW_TYPE = 2;
@@ -30,11 +30,17 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Item
 
     public interface OnItemClickListener {
         void onCurrentPictureChanged(int position);
+
         void onItemRemoved(int position);
     }
 
     public void setOnItemClickListener(ImageListAdapter.OnItemClickListener onItemClickListener) {
         this.mOnItemClickListener = onItemClickListener;
+    }
+
+    ImageListAdapter(Context context) {
+        this.mContext = context;
+        this.mList = new ArrayList<>();
     }
 
     private void onItemSelected(int position) {
@@ -64,11 +70,6 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Item
 
     private TransformedImage getItem(int i) {
         return mList.get(i);
-    }
-
-    public ImageListAdapter(Context context) {
-        this.mContext = context;
-        this.mList = new ArrayList<>();
     }
 
     @Override
@@ -120,10 +121,10 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Item
         if (index < 0) {
             return;
         }
-        if (image.getBitmap() != null){
+        if (image.getBitmap() != null) {
             getItem(index).setBitmap(image.getBitmap());
             notifyDataSetChanged();
-        }else {
+        } else {
             getItem(index).setProgress(image.getProgress());
         }
     }
@@ -148,7 +149,7 @@ public class ImageListAdapter extends RecyclerView.Adapter<ImageListAdapter.Item
             data.setProgressBar(mBinding.itemImageProgress);
 
             if (mViewType == FIRST_VIEW_TYPE) {
-                mBinding.getRoot().setBackgroundColor(mContext.getResources().getColor(R.color.grey));
+                mBinding.getRoot().setBackgroundColor(mContext.getResources().getColor(R.color.grey_light));
             } else {
                 mBinding.getRoot().setBackgroundColor(mContext.getResources().getColor(R.color.white));
             }

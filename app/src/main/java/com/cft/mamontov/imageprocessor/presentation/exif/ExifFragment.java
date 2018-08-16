@@ -1,32 +1,20 @@
 package com.cft.mamontov.imageprocessor.presentation.exif;
 
 import android.databinding.DataBindingUtil;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.nfc.Tag;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.media.ExifInterface;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.cft.mamontov.imageprocessor.R;
 import com.cft.mamontov.imageprocessor.databinding.FragmentExifBinding;
 
-import com.cft.mamontov.imageprocessor.R;
-
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
 
 public class ExifFragment extends DialogFragment {
 
@@ -73,6 +61,7 @@ public class ExifFragment extends DialogFragment {
 
     private void showExif(ExifInterface exif) {
         String attributes = "";
+        attributes += getTagString(ExifInterface.TAG_MAKE, exif);
         attributes += getTagString(ExifInterface.TAG_CAMARA_OWNER_NAME, exif);
         attributes += getTagString(ExifInterface.TAG_ARTIST, exif);
         attributes += getTagString(ExifInterface.TAG_IMAGE_DESCRIPTION, exif);
@@ -86,7 +75,6 @@ public class ExifFragment extends DialogFragment {
         attributes += getTagString(ExifInterface.TAG_GPS_LONGITUDE_REF, exif);
         attributes += getTagString(ExifInterface.TAG_IMAGE_LENGTH, exif);
         attributes += getTagString(ExifInterface.TAG_IMAGE_WIDTH, exif);
-        attributes += getTagString(ExifInterface.TAG_MAKE, exif);
         attributes += getTagString(ExifInterface.TAG_MODEL, exif);
         attributes += getTagString(ExifInterface.TAG_ORIENTATION, exif);
         attributes += getTagString(ExifInterface.TAG_WHITE_BALANCE, exif);

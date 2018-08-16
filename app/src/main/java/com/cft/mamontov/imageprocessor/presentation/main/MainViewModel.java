@@ -5,6 +5,8 @@ import android.arch.lifecycle.ViewModel;
 import android.graphics.Bitmap;
 
 import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
+import com.cft.mamontov.imageprocessor.data.preferences.PreferencesHelper;
+import com.cft.mamontov.imageprocessor.interactors.IImageInteractor;
 import com.cft.mamontov.imageprocessor.utils.rx.BaseSchedulerProvider;
 import com.cft.mamontov.imageprocessor.utils.tranformation.Transformation;
 
@@ -23,6 +25,8 @@ public class MainViewModel extends ViewModel {
 
     private final BaseSchedulerProvider mScheduler;
     private final CompositeDisposable mDisposable;
+    private final IImageInteractor mInteractor;
+    private final PreferencesHelper mPref;
     private final List<TransformedImage> mList;
 
     private int mId = 0;
@@ -32,9 +36,12 @@ public class MainViewModel extends ViewModel {
     private Bitmap mCurrentPicture;
 
     @Inject
-    MainViewModel(BaseSchedulerProvider scheduler, CompositeDisposable disposable) {
+    MainViewModel(BaseSchedulerProvider scheduler, CompositeDisposable disposable,
+                  IImageInteractor interactor, PreferencesHelper pref) {
         mScheduler = scheduler;
         mDisposable = disposable;
+        mInteractor = interactor;
+        mPref = pref;
         mList = Collections.synchronizedList(new ArrayList<>());
     }
 
@@ -45,6 +52,34 @@ public class MainViewModel extends ViewModel {
 
     List<TransformedImage> getList() {
         return mList;
+    }
+
+    String getSavedCurrentImage(){
+        return mPref.getCurrentImage();
+    }
+
+    void getSavedImageList(){
+        mDisposable.add(mInteractor.getOrderedImages()
+                .observeOn(mScheduler.ui())
+                .subscribe(this::onLoadSuccess, this::onError));
+    }
+
+    void saveImageToDatabase(TransformedImage image){
+        mDisposable.add(mInteractor.insertImage(image)
+                .observeOn(mScheduler.ui())
+                .subscribe(this::onSaveSuccess, this::onError));
+    }
+
+    private void onSaveSuccess() {
+
+    }
+
+    private void onLoadSuccess(List<TransformedImage> transformedImages) {
+
+    }
+
+    private void onError(Throwable throwable) {
+
     }
 
     boolean isHasImage() {
@@ -62,6 +97,7 @@ public class MainViewModel extends ViewModel {
     }
 
     void setCurrentPicturePath(String path) {
+        mPref.setCurrentImage(path);
         mCurrentPicturePath = path;
     }
 
@@ -87,7 +123,7 @@ public class MainViewModel extends ViewModel {
         mList.add(0, image);
         postItem.postValue(image);
         mDisposable.add(Observable.intervalRange(1, 10, 0,
-                getLongProcessing() / 10, TimeUnit.SECONDS)
+                getLongProcessing() / 10, TimeUnit.MILLISECONDS)
                 .subscribeOn(mScheduler.newThread())
                 .observeOn(mScheduler.ui())
                 .subscribe(v -> {
@@ -97,8 +133,8 @@ public class MainViewModel extends ViewModel {
     }
 
     private long getLongProcessing() {
-        int minDelay = 5;
-        int maxDelay = 30;
+        int minDelay = 5000;
+        int maxDelay = 30000;
         return minDelay + (long) (Math.random() * maxDelay - minDelay);
     }
 
@@ -124,6 +160,14 @@ public class MainViewModel extends ViewModel {
                 }
             }
             return -1;
+        }
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        if (!mDisposable.isDisposed()){
+            mDisposable.dispose();
         }
     }
 }
