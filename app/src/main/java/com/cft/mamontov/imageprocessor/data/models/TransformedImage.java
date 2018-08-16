@@ -8,6 +8,7 @@ import com.cft.mamontov.imageprocessor.utils.Processable;
 public class TransformedImage implements Processable {
 
     private int id;
+    private String path;
     private Bitmap bitmap = null;
     private ProgressBar progressBar = null;
     private int progress = 0;
@@ -22,6 +23,14 @@ public class TransformedImage implements Processable {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public Bitmap getBitmap() {

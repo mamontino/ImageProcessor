@@ -27,8 +27,8 @@ public class MainViewModel extends ViewModel {
 
     private int mId = 0;
     private boolean hasImage;
-    private String mUrl;
-    private String mCurrentPicturePath;
+    private String mUrl = "";
+    private String mCurrentPicturePath = "";
     private Bitmap mCurrentPicture;
 
     @Inject

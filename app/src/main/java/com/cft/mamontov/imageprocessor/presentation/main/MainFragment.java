@@ -16,10 +16,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
+import android.support.media.ExifInterface;
 import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +35,8 @@ import com.cft.mamontov.imageprocessor.databinding.FragmentMainBinding;
 import com.cft.mamontov.imageprocessor.di.IPViewModelFactory;
 import com.cft.mamontov.imageprocessor.di.scope.ActivityScope;
 import com.cft.mamontov.imageprocessor.presentation.choose.ChooseFragment;
+import com.cft.mamontov.imageprocessor.presentation.exif.ExifFragment;
+import com.cft.mamontov.imageprocessor.utils.AppConstants;
 import com.cft.mamontov.imageprocessor.utils.bitmap.BitmapUtils;
 import com.cft.mamontov.imageprocessor.utils.tranformation.InvertColorTransformation;
 import com.cft.mamontov.imageprocessor.utils.tranformation.MirrorTransformation;
@@ -53,8 +57,7 @@ public class MainFragment extends DaggerFragment {
     public static final String TAG = "MainFragment";
     public static final String PROGRESS_UPDATE = "PROGRESS_UPDATE";
 
-    private static final int PERMISSION_CODE_CAMERA = 102;
-    private static final int PERMISSION_CODE_LOADER = 103;
+    private static final int PERMISSION_CODE = 102;
     private static final int REQUEST_CAMERA_PICTURE = 99;
     private static final int REQUEST_GALLERY_PICTURE = 88;
 
@@ -88,6 +91,7 @@ public class MainFragment extends DaggerFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_main, container, false);
         prepareViews();
+        requestPermission();
         mViewModel = ViewModelProviders.of(this, mViewModelFactory).get(MainViewModel.class);
         return mBinding.getRoot();
     }
@@ -110,6 +114,7 @@ public class MainFragment extends DaggerFragment {
                 case REQUEST_GALLERY_PICTURE:
                     if (data == null || getActivity() == null) return;
                     Bitmap galleryBitmap = BitmapUtils.getBitmap(data.getData(), getActivity());
+                    mViewModel.setCurrentPicturePath(BitmapUtils.getPathFromUri(data.getData(), getActivity()));
                     mViewModel.setCurrentPicture(galleryBitmap);
             }
         }
@@ -118,30 +123,22 @@ public class MainFragment extends DaggerFragment {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        if (requestCode == PERMISSION_CODE_CAMERA) {
-            if (grantResults.length == 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                    && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                Log.e(TAG, getResources().getString(R.string.camera_permission_granted));
-                sendCameraIntent();
-            } else {
-                Log.e(TAG, getResources().getString(R.string.camera_permission_denied));
-            }
-        } else if (requestCode == PERMISSION_CODE_LOADER) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Log.e(TAG, getResources().getString(R.string.camera_permission_granted));
-                registerReceiver();
-                startImageDownload();
-            } else {
-                Log.e(TAG, getResources().getString(R.string.camera_permission_denied));
-            }
+        if (grantResults.length == 3 && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
+            Log.e(TAG, getResources().getString(R.string.camera_permission_granted));
+        } else {
+            Log.e(TAG, getResources().getString(R.string.camera_permission_denied));
         }
     }
 
     private void registerReceiver() {
-        LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(getContext());
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(PROGRESS_UPDATE);
-        bManager.registerReceiver(getLoadingReceiver, intentFilter);
+        if (getActivity() != null) {
+            LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(getActivity());
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(PROGRESS_UPDATE);
+            bManager.registerReceiver(getLoadingReceiver, intentFilter);
+        }
     }
 
     private void startImageDownload() {
@@ -155,7 +152,7 @@ public class MainFragment extends DaggerFragment {
     public void loadImage(int requestCode) {
         switch (requestCode) {
             case ChooseFragment.REQUEST_CODE_CAMERA:
-                requestPermission(PERMISSION_CODE_CAMERA);
+                loadImageFromCamera();
                 break;
             case ChooseFragment.REQUEST_CODE_GALLERY:
                 loadPhotoFromGallery();
@@ -165,42 +162,30 @@ public class MainFragment extends DaggerFragment {
 
     public void loadImage(String uri) {
         mViewModel.setUrl(uri);
-        requestPermission(PERMISSION_CODE_LOADER);
+        registerReceiver();
+        startImageDownload();
     }
 
-    private void requestPermission(int mode) {
-        switch (mode) {
-            case PERMISSION_CODE_CAMERA:
-                if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                    Snackbar.make(mCoordinator, getResources().getString(R.string.camera_access_required),
-                            Snackbar.LENGTH_INDEFINITE).setAction(R.string.ok, view ->
-                            requestPermissions(new String[]{
-                                            Manifest.permission.CAMERA,
-                                            Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                    PERMISSION_CODE_CAMERA)).show();
-
-                } else {
+    private void requestPermission() {
+        if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+            Snackbar.make(mCoordinator, getResources().getString(R.string.camera_access_required),
+                    Snackbar.LENGTH_INDEFINITE).setAction(R.string.ok, view ->
                     requestPermissions(new String[]{
                                     Manifest.permission.CAMERA,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            PERMISSION_CODE_CAMERA);
-                }
-                break;
-            case PERMISSION_CODE_LOADER:
-                if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    Snackbar.make(mCoordinator, getResources().getString(R.string.camera_access_required),
-                            Snackbar.LENGTH_INDEFINITE).setAction(R.string.ok, view ->
-                            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                                    PERMISSION_CODE_LOADER)).show();
+                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                    Manifest.permission.READ_EXTERNAL_STORAGE},
+                            PERMISSION_CODE)).show();
 
-                } else {
-                    requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                            PERMISSION_CODE_LOADER);
-                }
+        } else {
+            requestPermissions(new String[]{
+                            Manifest.permission.CAMERA,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE},
+                    PERMISSION_CODE);
         }
     }
 
-    private void sendCameraIntent() {
+    private void loadImageFromCamera() {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_FINISH_ON_COMPLETION, true);
         if (cameraIntent.resolveActivity(getActivity().getPackageManager()) != null) {
@@ -227,10 +212,6 @@ public class MainFragment extends DaggerFragment {
         takeGalleryIntent.setType("image/*");
         startActivityForResult(Intent.createChooser(takeGalleryIntent,
                 getString(R.string.choose_new_image_message)), REQUEST_GALLERY_PICTURE);
-    }
-
-    private void showExifFragment() {
-        Toast.makeText(getContext(), "showExifFragment", Toast.LENGTH_SHORT).show();
     }
 
     private void transformImage(int btn) {
@@ -276,6 +257,26 @@ public class MainFragment extends DaggerFragment {
 
     private void updateProcessing(TransformedImage image) {
         mAdapter.updateProcessing(image);
+        if (image.getBitmap() != null && getActivity() != null) {
+            File mPhotoFile;
+            try {
+                mPhotoFile = BitmapUtils.createImageFile(getActivity());
+                String path = Uri.decode(mPhotoFile.getAbsolutePath());
+                image.setPath(path);
+                BitmapUtils.addPhotoToGallery(path, getActivity());
+                try {
+                    ExifInterface exif = new ExifInterface(path);
+                    exif.setAttribute(ExifInterface.TAG_ARTIST, AppConstants.APP_NAME);
+                    exif.saveAttributes();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Log.e("Error loading file: " , e.getLocalizedMessage());
+                }
+            } catch (IOException e) {
+                Toast.makeText(getContext(), R.string.error_creating_file,
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void addItem(TransformedImage picture) {
@@ -284,9 +285,17 @@ public class MainFragment extends DaggerFragment {
 
     private void prepareViews() {
         mCoordinator = mBinding.getRoot().findViewById(R.id.main_coordinator);
-        mBinding.fragmentMainBtnExif.setOnClickListener(v -> showExifFragment());
         mBinding.addImageButton.setOnClickListener(v -> showChooseFragment());
         mBinding.mainImage.setOnClickListener(v -> showChooseFragment());
+        mBinding.mainImage.setOnLongClickListener(v -> {
+            if (getActivity() != null) {
+                ExifFragment.newInstance(mViewModel.getCurrentPicturePath()).show(getActivity()
+                        .getSupportFragmentManager(), MainFragment.TAG);
+                Log.e("show exif: ", mViewModel.getCurrentPicturePath());
+                return true;
+            }
+            return false;
+        });
         mBinding.fragmentMainBtnInvertColors.setOnClickListener(v -> transformImage(INVERT_COLOR));
         mBinding.fragmentMainBtnMirrorImage.setOnClickListener(v -> transformImage(MIRROR_IMAGE));
         mBinding.fragmentMainBtnRotate.setOnClickListener(v -> transformImage(ROTATE_IMAGE));
@@ -303,6 +312,7 @@ public class MainFragment extends DaggerFragment {
         mAdapter.setOnItemClickListener(new ImageListAdapter.OnItemClickListener() {
             @Override
             public void onCurrentPictureChanged(int position) {
+                mViewModel.setCurrentPicturePath(mAdapter.getCurrentItem(position).getPath());
                 mViewModel.setCurrentPicture(mAdapter.getCurrentItem(position).getBitmap());
             }
 
@@ -335,6 +345,7 @@ public class MainFragment extends DaggerFragment {
                     Toast.makeText(getContext(), R.string.success_file_download_complete,
                             Toast.LENGTH_SHORT).show();
                     Bitmap bitmap = BitmapUtils.getBitmap(path);
+                    mViewModel.setCurrentPicturePath(path);
                     mViewModel.setCurrentPicture(bitmap);
                 }
             }

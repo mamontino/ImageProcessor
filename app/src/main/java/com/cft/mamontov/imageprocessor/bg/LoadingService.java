@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.cft.mamontov.imageprocessor.R;
 import com.cft.mamontov.imageprocessor.data.Repository;
 import com.cft.mamontov.imageprocessor.data.models.ErrorResponse;
+import com.cft.mamontov.imageprocessor.interactors.ILoadInteractor;
 import com.cft.mamontov.imageprocessor.utils.network.ErrorHandler;
 import com.cft.mamontov.imageprocessor.exceptions.NoNetworkException;
 import com.cft.mamontov.imageprocessor.presentation.main.MainFragment;
@@ -49,7 +50,7 @@ public class LoadingService extends DaggerIntentService {
     public static final String EXTRA_SERVICE_FILE_NAME = "EXTRA_SERVICE_FILE_NAME";
 
     @Inject
-    Repository mData;
+    ILoadInteractor mData;
     @Inject
     CompositeDisposable mDisposable;
     @Inject
@@ -114,7 +115,6 @@ public class LoadingService extends DaggerIntentService {
         });
 
         mDisposable.add(mData.getImageFromUrl(url)
-                .subscribeOn(mScheduler.io())
                 .flatMap((Response<ResponseBody> response) -> {
                     try {
                         ResponseBody body = response.body();
