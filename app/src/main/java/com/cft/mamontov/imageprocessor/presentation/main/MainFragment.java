@@ -31,7 +31,7 @@ import com.cft.mamontov.imageprocessor.bg.LoadingService;
 import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
 import com.cft.mamontov.imageprocessor.databinding.FragmentMainBinding;
 import com.cft.mamontov.imageprocessor.di.IPViewModelFactory;
-import com.cft.mamontov.imageprocessor.di.scope.ActivityScoped;
+import com.cft.mamontov.imageprocessor.di.scope.ActivityScope;
 import com.cft.mamontov.imageprocessor.presentation.choose.ChooseFragment;
 import com.cft.mamontov.imageprocessor.utils.BitmapUtils;
 import com.cft.mamontov.imageprocessor.utils.tranformation.InvertColorTransformation;
@@ -47,17 +47,16 @@ import dagger.android.support.DaggerFragment;
 
 import static android.app.Activity.RESULT_OK;
 
-@ActivityScoped
-public class MainFragment extends DaggerFragment{
+@ActivityScope
+public class MainFragment extends DaggerFragment {
 
     public static final String TAG = "MainFragment";
+    public static final String PROGRESS_UPDATE = "PROGRESS_UPDATE";
 
     private static final int PERMISSION_CODE_CAMERA = 102;
     private static final int PERMISSION_CODE_LOADER = 103;
     private static final int REQUEST_CAMERA_PICTURE = 99;
     private static final int REQUEST_GALLERY_PICTURE = 88;
-
-    public static final String PROGRESS_UPDATE = "PROGRESS_UPDATE";
 
     private static final int ROTATE_IMAGE = 110;
     private static final int INVERT_COLOR = 111;
@@ -127,7 +126,7 @@ public class MainFragment extends DaggerFragment{
             } else {
                 Log.e(TAG, getResources().getString(R.string.camera_permission_denied));
             }
-        }else if (requestCode == PERMISSION_CODE_LOADER){
+        } else if (requestCode == PERMISSION_CODE_LOADER) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Log.e(TAG, getResources().getString(R.string.camera_permission_granted));
                 registerReceiver();
@@ -146,9 +145,9 @@ public class MainFragment extends DaggerFragment{
     }
 
     private void startImageDownload() {
-        if (getActivity() != null){
+        if (getActivity() != null) {
             Intent intent = new Intent(getActivity(), LoadingService.class);
-            intent.putExtra(LoadingService.EXTRA_SERVICE_URL, mViewModel.url);
+            intent.putExtra(LoadingService.EXTRA_SERVICE_URL, mViewModel.getUrl());
             getActivity().startService(intent);
         }
     }
@@ -165,15 +164,15 @@ public class MainFragment extends DaggerFragment{
     }
 
     public void loadImage(String uri) {
-        mViewModel.url = uri;
+        mViewModel.setUrl(uri);
         requestPermission(PERMISSION_CODE_LOADER);
     }
 
     private void requestPermission(int mode) {
-        switch (mode){
+        switch (mode) {
             case PERMISSION_CODE_CAMERA:
                 if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                    Snackbar.make(mCoordinator,getResources().getString(R.string.camera_access_required),
+                    Snackbar.make(mCoordinator, getResources().getString(R.string.camera_access_required),
                             Snackbar.LENGTH_INDEFINITE).setAction(R.string.ok, view ->
                             requestPermissions(new String[]{
                                             Manifest.permission.CAMERA,
@@ -248,7 +247,6 @@ public class MainFragment extends DaggerFragment{
                 case MIRROR_IMAGE:
                     mViewModel.transformImage(new MirrorTransformation());
                     break;
-
             }
         }
     }
@@ -277,7 +275,7 @@ public class MainFragment extends DaggerFragment{
     }
 
     private void updateProcessing(TransformedImage image) {
-            mAdapter.updateProcessing(image);
+        mAdapter.updateProcessing(image);
     }
 
     private void addItem(TransformedImage picture) {

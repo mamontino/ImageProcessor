@@ -1,6 +1,6 @@
 package com.cft.mamontov.imageprocessor.di.module;
 
-import com.cft.mamontov.imageprocessor.di.scope.FragmentScoped;
+import com.cft.mamontov.imageprocessor.di.scope.FragmentScope;
 import com.cft.mamontov.imageprocessor.presentation.choose.ChooseFragment;
 import com.cft.mamontov.imageprocessor.presentation.load.LoadFragment;
 import com.cft.mamontov.imageprocessor.presentation.main.MainFragment;
@@ -11,15 +11,15 @@ import dagger.android.ContributesAndroidInjector;
 @Module
 public abstract class FragmentModule {
 
-    @FragmentScoped
+    @FragmentScope
     @ContributesAndroidInjector
     abstract MainFragment mainFragment();
 
-    @FragmentScoped
+    @FragmentScope
     @ContributesAndroidInjector
     abstract ChooseFragment chooseFragment();
 
-    @FragmentScoped
+    @FragmentScope
     @ContributesAndroidInjector
     abstract LoadFragment loadFragment();
 }

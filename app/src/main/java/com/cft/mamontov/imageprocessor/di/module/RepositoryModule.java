@@ -12,6 +12,7 @@ import com.cft.mamontov.imageprocessor.data.network.INetworkDataSource;
 import com.cft.mamontov.imageprocessor.data.network.RemoteDataSource;
 import com.cft.mamontov.imageprocessor.di.name.Local;
 import com.cft.mamontov.imageprocessor.di.name.Remote;
+import com.cft.mamontov.imageprocessor.utils.events.RxBus;
 import com.cft.mamontov.imageprocessor.utils.schedulers.BaseSchedulerProvider;
 import com.cft.mamontov.imageprocessor.utils.schedulers.SchedulerProvider;
 
@@ -51,6 +52,12 @@ abstract public class RepositoryModule {
 
     @Singleton
     @Provides
+    public static ApiService provideApi(Retrofit retrofit) {
+        return retrofit.create(ApiService.class);
+    }
+
+    @Singleton
+    @Provides
     static BaseSchedulerProvider provideSchedulers(){
         return SchedulerProvider.getInstance();
     }
@@ -62,7 +69,7 @@ abstract public class RepositoryModule {
 
     @Singleton
     @Provides
-    public static ApiService provideApi(Retrofit retrofit) {
-        return retrofit.create(ApiService.class);
+    public static RxBus provideRxBus() {
+        return RxBus.get();
     }
 }

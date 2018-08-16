@@ -1,4 +1,4 @@
-package com.cft.mamontov.imageprocessor.data.network;
+package com.cft.mamontov.imageprocessor.utils;
 
 import com.cft.mamontov.imageprocessor.data.models.ErrorResponse;
 import com.google.gson.Gson;

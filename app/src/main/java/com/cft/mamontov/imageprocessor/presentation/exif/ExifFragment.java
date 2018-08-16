@@ -42,21 +42,6 @@ public class ExifFragment extends DaggerDialogFragment {
     }
 
     private void initViews() {
-
-//        List<Map<String, Object>> list = new ArrayList<>();
-//        Map<String, Object> map = new HashMap<String, Object>();
-//        map.put("foo", "bar");
-//        list.add(map);
-
-        Uri uri = Uri.parse("ojhlsihdvbkadg");
-        ArrayList<Map<String, String>> list = new ArrayList<>();
-        Map<String, String> map = new HashMap<>(ExifUtils.getExifInfo(getActivity().getContentResolver(), uri));
-        Iterator<Map.Entry<String, String>> itr = map.entrySet().iterator();
-
-        while (itr.hasNext()) {
-            Map.Entry<String, String> entry = itr.next();
-            list.add((Map<String, String>) entry);
-        }
     }
 }
 

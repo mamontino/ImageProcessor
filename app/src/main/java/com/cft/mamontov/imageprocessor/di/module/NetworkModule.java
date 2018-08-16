@@ -2,11 +2,13 @@ package com.cft.mamontov.imageprocessor.di.module;
 
 import android.app.Application;
 
-import com.cft.mamontov.imageprocessor.data.network.ErrorHandler;
-import com.cft.mamontov.imageprocessor.data.network.NetworkChecker;
-import com.cft.mamontov.imageprocessor.data.network.NetworkStateInterceptor;
+import com.cft.mamontov.imageprocessor.utils.ErrorHandler;
+import com.cft.mamontov.imageprocessor.utils.NetworkChecker;
+import com.cft.mamontov.imageprocessor.data.network.interceptor.NetworkStateInterceptor;
+import com.cft.mamontov.imageprocessor.data.network.interceptor.UpdateProgressInterceptor;
 import com.cft.mamontov.imageprocessor.di.name.OkHttpNetworkInteceptor;
 import com.cft.mamontov.imageprocessor.utils.AppConstants;
+import com.cft.mamontov.imageprocessor.utils.events.RxBus;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -46,11 +48,12 @@ public class NetworkModule {
 
     @Provides
     @Singleton
-    public static OkHttpClient provideOkHttpClient(Cache cache, NetworkChecker networkChecker,
+    public static OkHttpClient provideOkHttpClient(Cache cache, NetworkChecker networkChecker, RxBus rxBus,
                                                    @OkHttpNetworkInteceptor List<Interceptor> networkInterceptors) {
 
         final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder();
         okHttpBuilder.addInterceptor(new NetworkStateInterceptor(networkChecker));
+        okHttpBuilder.addInterceptor(new UpdateProgressInterceptor(rxBus));
 
         for (Interceptor networkInterceptor : networkInterceptors) {
             okHttpBuilder.addNetworkInterceptor(networkInterceptor);

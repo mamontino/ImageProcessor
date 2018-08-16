@@ -19,6 +19,13 @@ public class ErrorResponse implements Parcelable {
     @SerializedName("name")
     private String mName;
 
+    public ErrorResponse() {
+    }
+
+    public ErrorResponse(String message) {
+        mMessage = message;
+    }
+
     public void setCode(int code) {
         mCode = code;
     }
@@ -35,9 +42,6 @@ public class ErrorResponse implements Parcelable {
         mName = name;
     }
 
-    public ErrorResponse() {
-    }
-
     public int getCode() {
         return mCode;
     }
@@ -52,17 +56,6 @@ public class ErrorResponse implements Parcelable {
 
     public String getName() {
         return mName;
-    }
-
-    public ErrorResponse(String message) {
-        mMessage = message;
-    }
-
-    public ErrorResponse(int code, int status, String message, String name) {
-        this.mCode = code;
-        this.mStatus = status;
-        this.mMessage = message;
-        this.mName = name;
     }
 
     @Override

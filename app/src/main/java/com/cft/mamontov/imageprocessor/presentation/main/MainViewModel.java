@@ -21,18 +21,15 @@ import io.reactivex.disposables.CompositeDisposable;
 
 public class MainViewModel extends ViewModel {
 
-    private static final int mMinDelay = 5;
-    private static final int mMaxDelay = 30;
-
     private final BaseSchedulerProvider mScheduler;
     private final CompositeDisposable mDisposable;
+    private final List<TransformedImage> mList;
 
     private int mId = 0;
     private boolean hasImage;
-    public String url;
-    private final List<TransformedImage> mList;
-    private Bitmap mCurrentPicture;
+    private String mUrl;
     private String mCurrentPicturePath;
+    private Bitmap mCurrentPicture;
 
     @Inject
     MainViewModel(BaseSchedulerProvider scheduler, CompositeDisposable disposable) {
@@ -76,6 +73,14 @@ public class MainViewModel extends ViewModel {
         mList.remove(position);
     }
 
+    public String getUrl() {
+        return mUrl;
+    }
+
+    public void setUrl(String url) {
+        mUrl = url;
+    }
+
     void transformImage(Transformation transformation) {
         mId++;
         TransformedImage image = new TransformedImage(mId);
@@ -92,7 +97,9 @@ public class MainViewModel extends ViewModel {
     }
 
     private long getLongProcessing() {
-        return mMinDelay + (long) (Math.random() * mMaxDelay - mMinDelay);
+        int minDelay = 5;
+        int maxDelay = 30;
+        return minDelay + (long) (Math.random() * maxDelay - minDelay);
     }
 
     private synchronized void applyTransformation(Transformation transformation, TransformedImage image) {

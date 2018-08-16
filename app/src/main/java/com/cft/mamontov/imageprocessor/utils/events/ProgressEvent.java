@@ -2,31 +2,31 @@ package com.cft.mamontov.imageprocessor.utils.events;
 
 public class ProgressEvent {
 
-    final int progress;
-    final long contentLength;
-    final String downloadIdentifier;
-    final long bytesRead;
+    private final String message;
+    private final long progress;
+    private final boolean showing;
+    private final boolean error;
 
-    public ProgressEvent(String identifier, long contentLength, long bytesRead) {
-        this.contentLength = contentLength;
-        this.progress = (int) (bytesRead / (contentLength / 100f));
-        downloadIdentifier = identifier;
-        this.bytesRead = bytesRead;
+    public ProgressEvent(String message, long progress, boolean showing, boolean error) {
+        this.message = message;
+        this.progress = progress;
+        this.showing = showing;
+        this.error = error;
     }
 
-    public int getProgress(){
+    public String getMessage() {
+        return message;
+    }
+
+    public long getProgress() {
         return progress;
     }
 
-    public String getDownloadIdentifier() {
-        return downloadIdentifier;
+    public boolean isShowing() {
+        return showing;
     }
 
-    public long getBytesRead() {
-        return bytesRead;
-    }
-
-    public boolean percentIsAvailable() {
-        return contentLength > 0;
+    public boolean isError() {
+        return error;
     }
 }

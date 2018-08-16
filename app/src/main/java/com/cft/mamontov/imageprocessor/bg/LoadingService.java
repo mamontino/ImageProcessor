@@ -1,5 +1,6 @@
 package com.cft.mamontov.imageprocessor.bg;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -12,8 +13,13 @@ import android.widget.Toast;
 
 import com.cft.mamontov.imageprocessor.R;
 import com.cft.mamontov.imageprocessor.data.Repository;
+import com.cft.mamontov.imageprocessor.data.models.ErrorResponse;
+import com.cft.mamontov.imageprocessor.utils.ErrorHandler;
+import com.cft.mamontov.imageprocessor.exceptions.NoNetworkException;
 import com.cft.mamontov.imageprocessor.presentation.main.MainFragment;
 import com.cft.mamontov.imageprocessor.utils.BitmapUtils;
+import com.cft.mamontov.imageprocessor.utils.events.ProgressEvent;
+import com.cft.mamontov.imageprocessor.utils.events.RxBus;
 import com.cft.mamontov.imageprocessor.utils.schedulers.BaseSchedulerProvider;
 
 import java.io.File;
@@ -27,6 +33,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import okhttp3.ResponseBody;
 import okio.BufferedSink;
 import okio.Okio;
+import retrofit2.HttpException;
 import retrofit2.Response;
 
 public class LoadingService extends DaggerIntentService {
@@ -47,6 +54,10 @@ public class LoadingService extends DaggerIntentService {
     CompositeDisposable mDisposable;
     @Inject
     BaseSchedulerProvider mScheduler;
+    @Inject
+    RxBus mRxBus;
+    @Inject
+    ErrorHandler mErrorHandler;
 
     private NotificationCompat.Builder mBuilder;
     private NotificationManager mManager;
@@ -92,7 +103,16 @@ public class LoadingService extends DaggerIntentService {
         mManager.notify(0, mBuilder.build());
     }
 
+    @SuppressLint("CheckResult")
     private void downloadImage(String url) {
+
+        mRxBus.toObservable().subscribe(o -> {
+            if (o instanceof ProgressEvent){
+                ProgressEvent event = (ProgressEvent) o;
+                updateNotification((int)event.getProgress());
+            }
+        });
+
         mDisposable.add(mData.getImageFromUrl(url)
                 .subscribeOn(mScheduler.io())
                 .flatMap((Response<ResponseBody> response) -> {
@@ -118,7 +138,20 @@ public class LoadingService extends DaggerIntentService {
     }
 
     private void onError(Throwable throwable) {
-        Toast.makeText(this, throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        if (throwable instanceof NoNetworkException) {
+            Toast.makeText(this, "No network", Toast.LENGTH_SHORT).show();
+        } else if (throwable instanceof HttpException) {
+            final HttpException httpException = (HttpException) throwable;
+            switch (httpException.code()) {
+                case 404:
+                    Toast.makeText(this, "404 NOT FOUND", Toast.LENGTH_SHORT).show();
+                default:
+                    ErrorResponse response = mErrorHandler.parseError(httpException.response());
+                    Toast.makeText(this, response.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, throwable.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void updateNotification(int currentProgress) {
@@ -127,15 +160,11 @@ public class LoadingService extends DaggerIntentService {
         mManager.notify(0, mBuilder.build());
     }
 
-    private void sendProgressUpdate(boolean downloadComplete, String file) {
+    private void onDownloadComplete(String file) {
         Intent intent = new Intent(MainFragment.PROGRESS_UPDATE);
-        intent.putExtra(EXTRA_SERVICE_COMPLETE, downloadComplete);
+        intent.putExtra(EXTRA_SERVICE_COMPLETE, true);
         intent.putExtra(EXTRA_SERVICE_FILE_NAME, file);
         LocalBroadcastManager.getInstance(LoadingService.this).sendBroadcast(intent);
-    }
-
-    private void onDownloadComplete(String file) {
-        sendProgressUpdate(true, file);
         mManager.cancel(0);
         mBuilder.setProgress(0, 0, false);
         mBuilder.setContentText(getResources().getString(R.string.success_file_download_complete));

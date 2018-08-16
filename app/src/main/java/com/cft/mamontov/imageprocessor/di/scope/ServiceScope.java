@@ -1,14 +1,13 @@
-package com.cft.mamontov.imageprocessor.di.name;
+package com.cft.mamontov.imageprocessor.di.scope;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.inject.Qualifier;
+import javax.inject.Scope;
 
-@Qualifier
 @Documented
+@Scope
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OkHttpUrlInterceptor {
-
+public @interface ServiceScope {
 }
