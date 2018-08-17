@@ -1,8 +1,8 @@
 package com.cft.mamontov.imageprocessor.di.module;
 
 import com.cft.mamontov.imageprocessor.di.scope.ServiceScope;
-import com.cft.mamontov.imageprocessor.interactors.IImageInteractor;
-import com.cft.mamontov.imageprocessor.interactors.ILoadInteractor;
+import com.cft.mamontov.imageprocessor.interactors.ImageInteractorHelper;
+import com.cft.mamontov.imageprocessor.interactors.LoadInteractorHelper;
 import com.cft.mamontov.imageprocessor.interactors.ImageInteractor;
 import com.cft.mamontov.imageprocessor.interactors.LoadInteractor;
 
@@ -15,10 +15,8 @@ public abstract class InteractorModule {
 
     @ServiceScope
     @Binds
-    abstract ILoadInteractor provideLoadInteractor(LoadInteractor interactor);
+    abstract LoadInteractorHelper provideLoadInteractor(LoadInteractor interactor);
 
-    @Provides
-    static IImageInteractor provideImageInteractor(ImageInteractor interactor){
-        return interactor;
-    };
+    @Binds
+    abstract ImageInteractorHelper provideImageInteractor(ImageInteractor interactor);
 }

@@ -1,8 +1,8 @@
 package com.cft.mamontov.imageprocessor.data;
 
-import com.cft.mamontov.imageprocessor.data.db.ILocalDataSource;
+import com.cft.mamontov.imageprocessor.data.db.DatabaseHelper;
 import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
-import com.cft.mamontov.imageprocessor.data.network.INetworkDataSource;
+import com.cft.mamontov.imageprocessor.data.network.NetworkHelper;
 import com.cft.mamontov.imageprocessor.data.preferences.PreferencesHelper;
 import com.cft.mamontov.imageprocessor.di.name.Local;
 import com.cft.mamontov.imageprocessor.di.name.Remote;
@@ -19,18 +19,18 @@ import okhttp3.ResponseBody;
 import retrofit2.Response;
 
 @Singleton
-public class Repository implements ILocalDataSource, INetworkDataSource, PreferencesHelper {
+public class Repository implements DatabaseHelper, NetworkHelper, PreferencesHelper {
 
-    private final ILocalDataSource mLocalDataSource;
-    private final INetworkDataSource mRemoteDataSource;
-    private final PreferencesHelper mPref;
+    private DatabaseHelper mLocalDataSource;
+    private NetworkHelper mRemoteDataSource;
+    private PreferencesHelper mPreferences;
 
     @Inject
-    Repository(@Local ILocalDataSource localDataSource, @Remote INetworkDataSource remoteDataSource,
-               PreferencesHelper pref) {
+    Repository(@Local DatabaseHelper localDataSource, @Remote NetworkHelper remoteDataSource,
+               PreferencesHelper preferences) {
         mLocalDataSource = localDataSource;
         mRemoteDataSource = remoteDataSource;
-        mPref = pref;
+        mPreferences = preferences;
     }
 
     @Override
@@ -50,11 +50,11 @@ public class Repository implements ILocalDataSource, INetworkDataSource, Prefere
 
     @Override
     public void setCurrentImage(String image) {
-        mPref.setCurrentImage(image);
+        mPreferences.setCurrentImage(image);
     }
 
     @Override
     public String getCurrentImage() {
-        return mPref.getCurrentImage();
+        return mPreferences.getCurrentImage();
     }
 }

@@ -128,9 +128,22 @@ public class MainFragment extends DaggerFragment {
         if (grantResults.length == 3 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                 && grantResults[1] == PackageManager.PERMISSION_GRANTED
                 && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
-            Log.e(TAG, getResources().getString(R.string.camera_permission_granted));
+            Log.e("onRequestPermissionsResult", "permission granted");
+            getImageFromPreferences();
         } else {
-            Toast.makeText(getContext(), "You dont have permission", Toast.LENGTH_LONG).show();
+            Log.e("onRequestPermissionsResult", "permission denied");
+        }
+    }
+
+    private void getImageFromPreferences() {
+        if (!mViewModel.getSavedCurrentImage().isEmpty()) {
+            Log.e("Saved image: ", mViewModel.getSavedCurrentImage());
+            mViewModel.setIsHasImage(true);
+            String path = BitmapUtils.getPathFromUri(Uri.parse(mViewModel.getSavedCurrentImage()), getActivity());
+            Bitmap bitmap = BitmapUtils.getBitmap(path);
+            if (bitmap != null) {
+                setCurrentImage(bitmap);
+            }
         }
     }
 

@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import io.reactivex.Scheduler;
 
-public interface BaseSchedulerProvider {
+public interface SchedulerProviderHelper {
 
     @NonNull
     Scheduler computation();

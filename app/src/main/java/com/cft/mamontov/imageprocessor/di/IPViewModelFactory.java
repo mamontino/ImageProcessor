@@ -27,9 +27,7 @@ public class IPViewModelFactory implements ViewModelProvider.Factory {
         Provider<ViewModel> viewModelProvider = viewModels.get(modelClass);
 
         if (viewModelProvider == null) {
-            throw new IllegalArgumentException("model class "
-                    + modelClass
-                    + " not found");
+            throw new IllegalArgumentException("model class " + modelClass + " not found");
         }
         return (T) viewModelProvider.get();
     }

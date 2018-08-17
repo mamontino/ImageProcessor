@@ -61,16 +61,6 @@ public class BitmapUtils {
         return decodeSampledBitmapFromResource(path);
     }
 
-    public static Bitmap decodeSampledBitmapFromResource(String path) {
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(path, options);
-        options.inSampleSize = calculateInSampleSize(options);
-        options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeFile(path, options);
-    }
-
     private static int calculateInSampleSize(BitmapFactory.Options options) {
         final int reqHeight = 500;
         final int reqWidth = 500;
@@ -88,8 +78,7 @@ public class BitmapUtils {
         return inSampleSize;
     }
 
-    public static Uri insertImage(ContentResolver cr, Bitmap source, String title,
-                                     String description) {
+    public static Uri insertImage(ContentResolver cr, Bitmap source, String title, String description) {
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, title);
         values.put(MediaStore.Images.Media.DISPLAY_NAME, title);
@@ -123,6 +112,16 @@ public class BitmapUtils {
             }
         }
         return url;
+    }
+
+    private static Bitmap decodeSampledBitmapFromResource(String path) {
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, options);
+        options.inSampleSize = calculateInSampleSize(options);
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(path, options);
     }
 }
 

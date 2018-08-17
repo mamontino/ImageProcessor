@@ -2,21 +2,24 @@ package com.cft.mamontov.imageprocessor.di.module;
 
 import android.app.Application;
 import android.arch.persistence.room.Room;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
-import com.cft.mamontov.imageprocessor.data.db.ILocalDataSource;
+import com.cft.mamontov.imageprocessor.data.db.DatabaseHelper;
+import com.cft.mamontov.imageprocessor.data.db.DatabaseManager;
 import com.cft.mamontov.imageprocessor.data.db.IPDatabase;
 import com.cft.mamontov.imageprocessor.data.db.ImageDao;
-import com.cft.mamontov.imageprocessor.data.db.LocalDataSource;
 import com.cft.mamontov.imageprocessor.data.network.ApiService;
-import com.cft.mamontov.imageprocessor.data.network.INetworkDataSource;
-import com.cft.mamontov.imageprocessor.data.network.RemoteDataSource;
+import com.cft.mamontov.imageprocessor.data.network.NetworkHelper;
+import com.cft.mamontov.imageprocessor.data.network.NetworkManager;
 import com.cft.mamontov.imageprocessor.data.preferences.PreferencesHelper;
 import com.cft.mamontov.imageprocessor.data.preferences.PreferencesManager;
 import com.cft.mamontov.imageprocessor.di.name.Local;
 import com.cft.mamontov.imageprocessor.di.name.Remote;
 import com.cft.mamontov.imageprocessor.utils.AppConstants;
 import com.cft.mamontov.imageprocessor.utils.events.RxBus;
-import com.cft.mamontov.imageprocessor.utils.rx.BaseSchedulerProvider;
+import com.cft.mamontov.imageprocessor.utils.rx.SchedulerProviderHelper;
 import com.cft.mamontov.imageprocessor.utils.rx.SchedulerProvider;
 
 import javax.inject.Singleton;
@@ -33,17 +36,22 @@ abstract public class RepositoryModule {
     @Singleton
     @Binds
     @Local
-    abstract ILocalDataSource provideLocalDataSource(LocalDataSource dataSource);
+    abstract DatabaseHelper provideLocalDataSource(DatabaseManager databaseManager);
 
     @Singleton
     @Binds
     @Remote
-    abstract INetworkDataSource provideRemoteDataSource(RemoteDataSource dataSource);
+    abstract NetworkHelper provideRemoteDataSource(NetworkManager networkManager);
+
+    @Singleton
+    @Binds
+    abstract PreferencesHelper providePreferencesHelper(PreferencesManager preferencesManager);
+
 
     @Singleton
     @Provides
-    static PreferencesHelper providePreferencesHelper(PreferencesManager preferencesManager) {
-        return preferencesManager;
+    static SharedPreferences provideSharedPreference(Context context){
+        return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     @Singleton
@@ -61,13 +69,13 @@ abstract public class RepositoryModule {
 
     @Singleton
     @Provides
-    public static ApiService provideApi(Retrofit retrofit) {
+    static ApiService provideApi(Retrofit retrofit) {
         return retrofit.create(ApiService.class);
     }
 
     @Singleton
     @Provides
-    static BaseSchedulerProvider provideSchedulers(){
+    static SchedulerProviderHelper provideSchedulers() {
         return SchedulerProvider.getInstance();
     }
 
@@ -78,7 +86,7 @@ abstract public class RepositoryModule {
 
     @Singleton
     @Provides
-    public static RxBus provideRxBus() {
+    static RxBus provideRxBus() {
         return RxBus.get();
     }
 }

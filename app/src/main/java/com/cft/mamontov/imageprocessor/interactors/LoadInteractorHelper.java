@@ -1,10 +1,9 @@
-package com.cft.mamontov.imageprocessor.data.network;
+package com.cft.mamontov.imageprocessor.interactors;
 
 import io.reactivex.Observable;
-import io.reactivex.Single;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 
-public interface INetworkDataSource {
+public interface LoadInteractorHelper {
     Observable<Response<ResponseBody>> getImageFromUrl(String url);
 }

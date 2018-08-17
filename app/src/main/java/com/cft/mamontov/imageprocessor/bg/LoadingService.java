@@ -14,14 +14,14 @@ import android.widget.Toast;
 import com.cft.mamontov.imageprocessor.R;
 import com.cft.mamontov.imageprocessor.data.models.ErrorResponse;
 import com.cft.mamontov.imageprocessor.exceptions.NoNetworkException;
-import com.cft.mamontov.imageprocessor.interactors.ILoadInteractor;
+import com.cft.mamontov.imageprocessor.interactors.LoadInteractorHelper;
 import com.cft.mamontov.imageprocessor.presentation.main.MainFragment;
 import com.cft.mamontov.imageprocessor.utils.AppConstants;
 import com.cft.mamontov.imageprocessor.utils.bitmap.BitmapUtils;
 import com.cft.mamontov.imageprocessor.utils.events.ProgressEvent;
 import com.cft.mamontov.imageprocessor.utils.events.RxBus;
 import com.cft.mamontov.imageprocessor.utils.network.ErrorHandler;
-import com.cft.mamontov.imageprocessor.utils.rx.BaseSchedulerProvider;
+import com.cft.mamontov.imageprocessor.utils.rx.SchedulerProviderHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,13 +50,13 @@ public class LoadingService extends DaggerIntentService {
     public static final String EXTRA_SERVICE_FILE_NAME = "EXTRA_SERVICE_FILE_NAME";
 
     @Inject
-    ILoadInteractor mData;
+    LoadInteractorHelper mData;
 
     @Inject
     CompositeDisposable mDisposable;
 
     @Inject
-    BaseSchedulerProvider mScheduler;
+    SchedulerProviderHelper mScheduler;
 
     @Inject
     RxBus mRxBus;
@@ -146,7 +146,7 @@ public class LoadingService extends DaggerIntentService {
 
     private void onError(Throwable throwable) {
         if (throwable instanceof NoNetworkException) {
-            Toast.makeText(this, "No network", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No network, check settings", Toast.LENGTH_SHORT).show();
         } else if (throwable instanceof HttpException) {
             final HttpException httpException = (HttpException) throwable;
             switch (httpException.code()) {

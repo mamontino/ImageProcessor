@@ -9,6 +9,6 @@ import javax.inject.Qualifier;
 @Qualifier
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OkHttpNetworkInteceptor {
+public @interface OkHttpNetworkInterceptor {
 
 }

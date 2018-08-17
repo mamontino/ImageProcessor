@@ -3,11 +3,11 @@ package com.cft.mamontov.imageprocessor.presentation.main;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
-import com.cft.mamontov.imageprocessor.data.preferences.PreferencesHelper;
-import com.cft.mamontov.imageprocessor.interactors.IImageInteractor;
-import com.cft.mamontov.imageprocessor.utils.rx.BaseSchedulerProvider;
+import com.cft.mamontov.imageprocessor.interactors.ImageInteractorHelper;
+import com.cft.mamontov.imageprocessor.utils.rx.SchedulerProviderHelper;
 import com.cft.mamontov.imageprocessor.utils.tranformation.Transformation;
 
 import java.util.ArrayList;
@@ -23,10 +23,9 @@ import io.reactivex.disposables.CompositeDisposable;
 
 public class MainViewModel extends ViewModel {
 
-    private final BaseSchedulerProvider mScheduler;
+    private final SchedulerProviderHelper mScheduler;
     private final CompositeDisposable mDisposable;
-    private final IImageInteractor mInteractor;
-    private final PreferencesHelper mPref;
+    private final ImageInteractorHelper mInteractor;
     private final List<TransformedImage> mList;
 
     private int mId = 0;
@@ -36,12 +35,11 @@ public class MainViewModel extends ViewModel {
     private Bitmap mCurrentPicture;
 
     @Inject
-    MainViewModel(BaseSchedulerProvider scheduler, CompositeDisposable disposable,
-                  IImageInteractor interactor, PreferencesHelper pref) {
+    MainViewModel(SchedulerProviderHelper scheduler, CompositeDisposable disposable,
+                  ImageInteractorHelper interactor) {
         mScheduler = scheduler;
         mDisposable = disposable;
         mInteractor = interactor;
-        mPref = pref;
         mList = Collections.synchronizedList(new ArrayList<>());
     }
 
@@ -55,7 +53,7 @@ public class MainViewModel extends ViewModel {
     }
 
     String getSavedCurrentImage(){
-        return mPref.getCurrentImage();
+        return mInteractor.getCurrentImage();
     }
 
     void getSavedImageList(){
@@ -97,7 +95,8 @@ public class MainViewModel extends ViewModel {
     }
 
     void setCurrentPicturePath(String path) {
-        mPref.setCurrentImage(path);
+        mInteractor.setCurrentImage(path);
+        Log.e("setCurrentImage to Pref", path);
         mCurrentPicturePath = path;
     }
 
@@ -169,5 +168,9 @@ public class MainViewModel extends ViewModel {
         if (!mDisposable.isDisposed()){
             mDisposable.dispose();
         }
+    }
+
+    public void setIsHasImage(boolean isHasImage) {
+        hasImage = isHasImage;
     }
 }

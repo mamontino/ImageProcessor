@@ -13,12 +13,12 @@ import io.reactivex.Completable;
 import io.reactivex.Flowable;
 
 @Singleton
-public class LocalDataSource implements ILocalDataSource {
+public class DatabaseManager implements DatabaseHelper {
 
     private final ImageDao mImageDao;
 
     @Inject
-    public LocalDataSource(@NonNull ImageDao imageDao) {
+    public DatabaseManager(@NonNull ImageDao imageDao) {
         mImageDao = imageDao;
     }
 

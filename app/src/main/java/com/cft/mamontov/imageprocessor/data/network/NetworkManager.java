@@ -4,17 +4,16 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Observable;
-import io.reactivex.Single;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 
 @Singleton
-public class RemoteDataSource implements INetworkDataSource {
+public class NetworkManager implements NetworkHelper {
 
     private final ApiService mApiService;
 
     @Inject
-    RemoteDataSource(ApiService apiService) {
+    NetworkManager(ApiService apiService) {
         this.mApiService = apiService;
     }
 

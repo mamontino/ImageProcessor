@@ -6,7 +6,7 @@ import com.cft.mamontov.imageprocessor.utils.network.ErrorHandler;
 import com.cft.mamontov.imageprocessor.utils.network.NetworkChecker;
 import com.cft.mamontov.imageprocessor.data.network.interceptor.NetworkStateInterceptor;
 import com.cft.mamontov.imageprocessor.data.network.interceptor.UpdateProgressInterceptor;
-import com.cft.mamontov.imageprocessor.di.name.OkHttpNetworkInteceptor;
+import com.cft.mamontov.imageprocessor.di.name.OkHttpNetworkInterceptor;
 import com.cft.mamontov.imageprocessor.utils.AppConstants;
 import com.cft.mamontov.imageprocessor.utils.events.RxBus;
 import com.facebook.stetho.okhttp3.StethoInterceptor;
@@ -32,7 +32,7 @@ import static java.util.Collections.singletonList;
 @Module
 public class NetworkModule {
 
-    @OkHttpNetworkInteceptor
+    @OkHttpNetworkInterceptor
     @Provides
     @Singleton
     public static List<Interceptor> provideOkHttpNetworkInterceptors() {
@@ -49,7 +49,7 @@ public class NetworkModule {
     @Provides
     @Singleton
     public static OkHttpClient provideOkHttpClient(Cache cache, NetworkChecker networkChecker, RxBus rxBus,
-                                                   @OkHttpNetworkInteceptor List<Interceptor> networkInterceptors) {
+                                                   @OkHttpNetworkInterceptor List<Interceptor> networkInterceptors) {
 
         final OkHttpClient.Builder okHttpBuilder = new OkHttpClient.Builder();
         okHttpBuilder.addInterceptor(new NetworkStateInterceptor(networkChecker));

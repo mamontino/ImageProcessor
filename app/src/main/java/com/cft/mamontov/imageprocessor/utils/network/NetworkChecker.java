@@ -8,15 +8,15 @@ import javax.inject.Inject;
 
 public class NetworkChecker {
 
-    private Context context;
+    private Context mContext;
 
     @Inject
     NetworkChecker(Context context) {
-        this.context = context;
+        this.mContext = context;
     }
 
     public boolean isConnected() {
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         assert cm != null;
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnectedOrConnecting();
