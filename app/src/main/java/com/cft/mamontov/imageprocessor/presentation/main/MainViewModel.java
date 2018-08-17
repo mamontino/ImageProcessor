@@ -92,9 +92,10 @@ public class MainViewModel extends ViewModel {
                 .subscribeOn(mScheduler.newThread())
                 .observeOn(mScheduler.ui())
                 .subscribe(v -> {
-                    image.setProgress(v.intValue() * 10);
-                    updateProcessing.postValue(image);
-                }, Throwable::printStackTrace, () -> applyTransformation(transformation, image)));
+                            image.setProgress(v.intValue() * 10);
+                            updateProcessing.postValue(image);
+                        }, t -> postError.postValue(t.getMessage()),
+                        () -> applyTransformation(transformation, image)));
     }
 
     private long getLongProcessing() {

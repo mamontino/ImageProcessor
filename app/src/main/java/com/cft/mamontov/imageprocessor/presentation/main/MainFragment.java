@@ -19,7 +19,6 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -124,12 +123,10 @@ public class MainFragment extends DaggerFragment {
         if (grantResults.length == 3 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                 && grantResults[1] == PackageManager.PERMISSION_GRANTED
                 && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
-            Log.e(TAG, "permissions granted");
             if (mDialog != null) {
                 mDialog.dismiss();
             }
         } else {
-            Log.e(TAG, "permissions denied");
             showNoPermissionsDialog();
         }
     }
@@ -270,7 +267,6 @@ public class MainFragment extends DaggerFragment {
             String path = BitmapUtils.getPathFromUri(uri, getContext());
             if (!path.isEmpty()) {
                 image.setPath(path);
-                Log.e("ImagePath: ", path);
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
                     String time = sdf.format(new Date());
@@ -282,7 +278,7 @@ public class MainFragment extends DaggerFragment {
                     exif.saveAttributes();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Log.e("Error loading file: ", e.getLocalizedMessage());
+                    showError("Error loading file: " + e.getLocalizedMessage());
                 }
             }
         }

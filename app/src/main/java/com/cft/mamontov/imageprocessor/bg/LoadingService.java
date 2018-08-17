@@ -112,9 +112,9 @@ public class LoadingService extends DaggerIntentService {
     private void downloadImage(String url) {
 
         mRxBus.toObservable().subscribe(o -> {
-            if (o instanceof ProgressEvent){
+            if (o instanceof ProgressEvent) {
                 ProgressEvent event = (ProgressEvent) o;
-                updateNotification((int)event.getProgress());
+                updateNotification((int) event.getProgress());
             }
         });
 
@@ -149,6 +149,8 @@ public class LoadingService extends DaggerIntentService {
             switch (httpException.code()) {
                 case 404:
                     Toast.makeText(this, "404 NOT FOUND", Toast.LENGTH_SHORT).show();
+                case 500:
+                    Toast.makeText(this, "500 SERVER ERROR. Please retry later.", Toast.LENGTH_SHORT).show();
                 default:
                     ErrorResponse response = mErrorHandler.parseError(httpException.response());
                     Toast.makeText(this, response.getMessage(), Toast.LENGTH_SHORT).show();
