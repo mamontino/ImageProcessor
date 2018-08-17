@@ -36,8 +36,7 @@ public class LoadFragment extends DaggerDialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_load_image,
                 container, false);
         initViews();
@@ -57,7 +56,7 @@ public class LoadFragment extends DaggerDialogFragment {
     }
 
     private void showError() {
-        mBinding.fragmentLoadEt.setHint(R.string.error_empty_url);
+        mBinding.fragmentLoadEt.setError(getResources().getString(R.string.error_empty_url));
     }
 
     public interface OnUrlListener {

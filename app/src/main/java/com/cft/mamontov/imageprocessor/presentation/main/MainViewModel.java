@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.cft.mamontov.imageprocessor.data.models.TransformedImage;
-import com.cft.mamontov.imageprocessor.interactors.ImageInteractorHelper;
 import com.cft.mamontov.imageprocessor.utils.rx.SchedulerProviderHelper;
 import com.cft.mamontov.imageprocessor.utils.tranformation.Transformation;
 
@@ -25,7 +24,6 @@ public class MainViewModel extends ViewModel {
 
     private final SchedulerProviderHelper mScheduler;
     private final CompositeDisposable mDisposable;
-    private final ImageInteractorHelper mInteractor;
     private final List<TransformedImage> mList;
 
     private int mId = 0;
@@ -35,11 +33,9 @@ public class MainViewModel extends ViewModel {
     private Bitmap mCurrentPicture;
 
     @Inject
-    MainViewModel(SchedulerProviderHelper scheduler, CompositeDisposable disposable,
-                  ImageInteractorHelper interactor) {
+    MainViewModel(SchedulerProviderHelper scheduler, CompositeDisposable disposable) {
         mScheduler = scheduler;
         mDisposable = disposable;
-        mInteractor = interactor;
         mList = Collections.synchronizedList(new ArrayList<>());
     }
 
@@ -50,34 +46,6 @@ public class MainViewModel extends ViewModel {
 
     List<TransformedImage> getList() {
         return mList;
-    }
-
-    String getSavedCurrentImage(){
-        return mInteractor.getCurrentImage();
-    }
-
-    void getSavedImageList(){
-        mDisposable.add(mInteractor.getOrderedImages()
-                .observeOn(mScheduler.ui())
-                .subscribe(this::onLoadSuccess, this::onError));
-    }
-
-    void saveImageToDatabase(TransformedImage image){
-        mDisposable.add(mInteractor.insertImage(image)
-                .observeOn(mScheduler.ui())
-                .subscribe(this::onSaveSuccess, this::onError));
-    }
-
-    private void onSaveSuccess() {
-
-    }
-
-    private void onLoadSuccess(List<TransformedImage> transformedImages) {
-
-    }
-
-    private void onError(Throwable throwable) {
-
     }
 
     boolean isHasImage() {
@@ -95,8 +63,6 @@ public class MainViewModel extends ViewModel {
     }
 
     void setCurrentPicturePath(String path) {
-        mInteractor.setCurrentImage(path);
-        Log.e("setCurrentImage to Pref", path);
         mCurrentPicturePath = path;
     }
 
@@ -165,12 +131,8 @@ public class MainViewModel extends ViewModel {
     @Override
     protected void onCleared() {
         super.onCleared();
-        if (!mDisposable.isDisposed()){
+        if (!mDisposable.isDisposed()) {
             mDisposable.dispose();
         }
-    }
-
-    public void setIsHasImage(boolean isHasImage) {
-        hasImage = isHasImage;
     }
 }

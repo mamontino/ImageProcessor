@@ -14,38 +14,42 @@ import okio.Source;
 
 public class ProgressResponseBody extends ResponseBody {
 
-    private final ResponseBody responseBody;
-    private final ProgressListener progressListener;
-    private BufferedSource bufferedSource;
+    private ResponseBody mResponseBody;
+    private ProgressListener mProgressListener;
+    private BufferedSource mBufferedSource;
 
     public ProgressResponseBody(ResponseBody responseBody, ProgressListener progressListener) {
-        this.responseBody = responseBody;
-        this.progressListener = progressListener;
+        this.mResponseBody = responseBody;
+        this.mProgressListener = progressListener;
     }
 
-    @Override public MediaType contentType() {
-        return responseBody.contentType();
+    @Override
+    public MediaType contentType() {
+        return mResponseBody.contentType();
     }
 
-    @Override public long contentLength() {
-        return responseBody.contentLength();
+    @Override
+    public long contentLength() {
+        return mResponseBody.contentLength();
     }
 
-    @Override public BufferedSource source() {
-        if (bufferedSource == null) {
-            bufferedSource = Okio.buffer(source(responseBody.source()));
+    @Override
+    public BufferedSource source() {
+        if (mBufferedSource == null) {
+            mBufferedSource = Okio.buffer(source(mResponseBody.source()));
         }
-        return bufferedSource;
+        return mBufferedSource;
     }
 
     private Source source(Source source) {
         return new ForwardingSource(source) {
             long totalBytesRead = 0L;
 
-            @Override public long read(Buffer sink, long byteCount) throws IOException {
+            @Override
+            public long read(Buffer sink, long byteCount) throws IOException {
                 long bytesRead = super.read(sink, byteCount);
                 totalBytesRead += bytesRead != -1 ? bytesRead : 0;
-                progressListener.update(totalBytesRead, responseBody.contentLength(), bytesRead == -1);
+                mProgressListener.update(totalBytesRead, mResponseBody.contentLength(), bytesRead == -1);
                 return bytesRead;
             }
         };

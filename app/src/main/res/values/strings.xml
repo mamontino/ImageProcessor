@@ -1,16 +1,9 @@
 <resources>
     <string name="app_name">ImageProcessor</string>
 
-    <!--Errors-->
-    <string name="error_empty_url">Empty Url</string>
-    <!--Errors-->
-
-    <!--FragmentLoadFromUrl-->
+    <string name="error_empty_url">Incorrect Url. Please, retry again.</string>
     <string name="fragment_load_btn_text">Download</string>
-    <string name="fragment_load_url_hint">Enter your url</string>
-    <!--FragmentLoadFromUrl-->
-
-    <!--FragmentMain-->
+    <string name="fragment_load_url_hint">Enter image url</string>
     <string name="fragment_main_add_image">Add image</string>
     <string name="fragment_main_rotate">Rotate</string>
     <string name="fragment_main_invert_colors">Invert colors</string>
@@ -20,20 +13,13 @@
     <string name="choose_fragment_open_camera">open camera</string>
     <string name="choose_fragment_load_from_url">load from url</string>
     <string name="choose_new_image_message">Choose new image</string>
-    <string name="message_need_take_permissions">Выберите разрешение</string>
     <string name="ok">OK</string>
-    <string name="camera_permission_granted">Permission granted</string>
-    <string name="camera_permission_denied">Permission denied</string>
-    <string name="camera_access_required">Camera access requared</string>
-    <string name="camera_unavailable">Camera unavailable</string>
-    <string name="fragment_main_exif">EXIF</string>
+    <string name="no">NO</string>
     <string name="edit">Edit</string>
     <string name="delete">Delete</string>
     <string name="select_action">Select action</string>
-    <string name="error_empty_bitmap">Empty bitmap. Retry again.</string>
     <string name="error_creating_file">Photo file can\'t be created, please try again</string>
     <string name="success_file_download_complete">File download completed</string>
-    <string name="exif_information_title">--- Exif information ---</string>
-    <!--FragmentMain-->
-
+    <string name="exif_information_title">Exif information</string>
+    <string name="dialog_no_permissions_text">To continue the work, accept the permissions. Accept permissions?</string>
 </resources>

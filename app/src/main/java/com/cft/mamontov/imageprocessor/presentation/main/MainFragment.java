@@ -1,6 +1,5 @@
 package com.cft.mamontov.imageprocessor.presentation.main;
 
-import android.Manifest;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,16 +8,15 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
-import android.support.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.Snackbar;
+import android.support.media.ExifInterface;
 import android.support.v4.content.FileProvider;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
@@ -51,6 +49,9 @@ import javax.inject.Inject;
 
 import dagger.android.support.DaggerFragment;
 
+import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.app.Activity.RESULT_OK;
 
 @ActivityScope
@@ -68,8 +69,8 @@ public class MainFragment extends DaggerFragment {
     private static final int MIRROR_IMAGE = 112;
 
     private FragmentMainBinding mBinding;
-    private CoordinatorLayout mCoordinator;
     private ImageListAdapter mAdapter;
+    private AlertDialog mDialog = null;
 
     @Inject
     IPViewModelFactory mViewModelFactory;
@@ -80,12 +81,6 @@ public class MainFragment extends DaggerFragment {
 
     @Inject
     public MainFragment() {
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
     }
 
     @Nullable
@@ -102,7 +97,9 @@ public class MainFragment extends DaggerFragment {
         super.onViewCreated(view, savedInstanceState);
         registerForContextMenu(mBinding.fragmentMainRv);
         prepareSubscribers();
-        requestPermission();
+        if (savedInstanceState == null) {
+            checkPermissions();
+        }
     }
 
     @Override
@@ -123,44 +120,17 @@ public class MainFragment extends DaggerFragment {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults.length == 3 && grantResults[0] == PackageManager.PERMISSION_GRANTED
                 && grantResults[1] == PackageManager.PERMISSION_GRANTED
                 && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
-            Log.e("onRequestPermissionsResult", "permission granted");
-            getImageFromPreferences();
-        } else {
-            Log.e("onRequestPermissionsResult", "permission denied");
-        }
-    }
-
-    private void getImageFromPreferences() {
-        if (!mViewModel.getSavedCurrentImage().isEmpty()) {
-            Log.e("Saved image: ", mViewModel.getSavedCurrentImage());
-            mViewModel.setIsHasImage(true);
-            String path = BitmapUtils.getPathFromUri(Uri.parse(mViewModel.getSavedCurrentImage()), getActivity());
-            Bitmap bitmap = BitmapUtils.getBitmap(path);
-            if (bitmap != null) {
-                setCurrentImage(bitmap);
+            Log.e(TAG, "permissions granted");
+            if (mDialog != null) {
+                mDialog.dismiss();
             }
-        }
-    }
-
-    private void registerReceiver() {
-        if (getActivity() != null) {
-            LocalBroadcastManager bManager = LocalBroadcastManager.getInstance(getActivity());
-            IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction(PROGRESS_UPDATE);
-            bManager.registerReceiver(getLoadingReceiver, intentFilter);
-        }
-    }
-
-    private void startImageDownload() {
-        if (getActivity() != null) {
-            Intent intent = new Intent(getActivity(), LoadingService.class);
-            intent.putExtra(LoadingService.EXTRA_SERVICE_URL, mViewModel.getUrl());
-            getActivity().startService(intent);
+        } else {
+            Log.e(TAG, "permissions denied");
+            showNoPermissionsDialog();
         }
     }
 
@@ -181,22 +151,42 @@ public class MainFragment extends DaggerFragment {
         startImageDownload();
     }
 
-    private void requestPermission() {
-        if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-            Snackbar.make(mCoordinator, getResources().getString(R.string.camera_access_required),
-                    Snackbar.LENGTH_INDEFINITE).setAction(R.string.ok, view ->
-                    requestPermissions(new String[]{
-                                    Manifest.permission.CAMERA,
-                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                                    Manifest.permission.READ_EXTERNAL_STORAGE},
-                            PERMISSION_CODE)).show();
-
+    private void checkPermissions() {
+        if (shouldShowRequestPermissionRationale(CAMERA) ||
+                shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE) ||
+                shouldShowRequestPermissionRationale(READ_EXTERNAL_STORAGE)) {
+            requestPermissions(new String[]{CAMERA, WRITE_EXTERNAL_STORAGE,
+                    READ_EXTERNAL_STORAGE}, PERMISSION_CODE);
         } else {
-            requestPermissions(new String[]{
-                            Manifest.permission.CAMERA,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.READ_EXTERNAL_STORAGE},
-                    PERMISSION_CODE);
+            requestPermissions(new String[]{CAMERA, WRITE_EXTERNAL_STORAGE,
+                    READ_EXTERNAL_STORAGE}, PERMISSION_CODE);
+        }
+    }
+
+    private void showNoPermissionsDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage(R.string.dialog_no_permissions_text)
+                .setPositiveButton(R.string.ok, (dialog, id) -> checkPermissions())
+                .setNegativeButton(R.string.no, (dialog, id) -> getActivity().finish())
+                .setCancelable(false);
+        mDialog = builder.create();
+        mDialog.show();
+    }
+
+    private void registerReceiver() {
+        if (getActivity() != null) {
+            LocalBroadcastManager manager = LocalBroadcastManager.getInstance(getActivity());
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(PROGRESS_UPDATE);
+            manager.registerReceiver(getLoadingReceiver, intentFilter);
+        }
+    }
+
+    private void startImageDownload() {
+        if (getActivity() != null) {
+            Intent intent = new Intent(getActivity(), LoadingService.class);
+            intent.putExtra(LoadingService.EXTRA_SERVICE_URL, mViewModel.getUrl());
+            getActivity().startService(intent);
         }
     }
 
@@ -254,7 +244,7 @@ public class MainFragment extends DaggerFragment {
     }
 
     private void setCurrentImage(Bitmap bitmap) {
-        if (mViewModel.isHasImage()) {
+        if (mViewModel.isHasImage() && bitmap != null) {
             mBinding.addImageButton.setVisibility(View.GONE);
             mBinding.mainImage.setVisibility(View.VISIBLE);
             mBinding.mainImage.setImageBitmap(bitmap);
@@ -280,17 +270,15 @@ public class MainFragment extends DaggerFragment {
             String path = BitmapUtils.getPathFromUri(uri, getContext());
             if (!path.isEmpty()) {
                 image.setPath(path);
-                mViewModel.saveImageToDatabase(image);
                 Log.e("ImagePath: ", path);
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault());
                     String time = sdf.format(new Date());
                     ExifInterface exif = new ExifInterface(path);
                     exif.setAttribute(ExifInterface.TAG_DATETIME, time);
-                    exif.setAttribute(ExifInterface.TAG_MAKE, AppConstants.APP_NAME);
-                    exif.setAttribute(ExifInterface.TAG_CAMARA_OWNER_NAME, AppConstants.APP_NAME);
                     exif.setAttribute(ExifInterface.TAG_ARTIST, AppConstants.APP_NAME);
-                    exif.setAttribute(ExifInterface.TAG_IMAGE_DESCRIPTION, AppConstants.APP_NAME);
+                    exif.setAttribute(ExifInterface.TAG_IMAGE_DESCRIPTION,
+                            "Made with the help of the program \" IMAGE PROCESSOR\"");
                     exif.saveAttributes();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -305,21 +293,22 @@ public class MainFragment extends DaggerFragment {
     }
 
     private void prepareViews() {
-        mCoordinator = mBinding.getRoot().findViewById(R.id.main_coordinator);
         mBinding.addImageButton.setOnClickListener(v -> showChooseFragment());
         mBinding.fragmentMainBtnInvertColors.setOnClickListener(v -> transformImage(INVERT_COLOR));
         mBinding.fragmentMainBtnMirrorImage.setOnClickListener(v -> transformImage(MIRROR_IMAGE));
         mBinding.fragmentMainBtnRotate.setOnClickListener(v -> transformImage(ROTATE_IMAGE));
         mBinding.mainImage.setOnClickListener(v -> showChooseFragment());
-        mBinding.mainImage.setOnLongClickListener(v -> {
-            if (getActivity() != null) {
-                ExifFragment.newInstance(mViewModel.getCurrentPicturePath()).show(getActivity()
-                        .getSupportFragmentManager(), MainFragment.TAG);
-                return true;
-            }
-            return false;
-        });
+        mBinding.mainImage.setOnLongClickListener(v -> showExifFragment());
         prepareRecyclerView();
+    }
+
+    private boolean showExifFragment() {
+        if (getActivity() != null) {
+            ExifFragment.newInstance(mViewModel.getCurrentPicturePath()).show(getActivity()
+                    .getSupportFragmentManager(), MainFragment.TAG);
+            return true;
+        }
+        return false;
     }
 
     private void prepareRecyclerView() {
@@ -332,8 +321,8 @@ public class MainFragment extends DaggerFragment {
         mAdapter.setOnItemClickListener(new ImageListAdapter.OnItemClickListener() {
             @Override
             public void onCurrentPictureChanged(int position) {
-                mViewModel.setCurrentPicturePath(mAdapter.getCurrentItem(position).getPath());
                 mViewModel.setCurrentPicture(mAdapter.getCurrentItem(position).getBitmap());
+                mViewModel.setCurrentPicturePath(mAdapter.getCurrentItem(position).getPath());
             }
 
             @Override

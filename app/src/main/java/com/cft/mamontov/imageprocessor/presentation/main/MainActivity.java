@@ -2,6 +2,7 @@ package com.cft.mamontov.imageprocessor.presentation.main;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.cft.mamontov.imageprocessor.R;
 import com.cft.mamontov.imageprocessor.exceptions.SourceNotFoundException;

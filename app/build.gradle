@@ -46,15 +46,9 @@ dependencies {
     implementation "com.android.support:design:$rootProject.supportLibraryVersion"
     implementation "com.android.support:recyclerview-v7:$rootProject.supportLibraryVersion"
     implementation "com.android.support:support-v4:$rootProject.supportLibraryVersion"
-    //    Image loader
-    implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
     //    ViewModel
     implementation "android.arch.lifecycle:extensions:$rootProject.lifecycle_version"
     implementation "android.arch.lifecycle:viewmodel:$rootProject.lifecycle_version"
-    //    Database
-    implementation "android.arch.persistence.room:runtime:$rootProject.roomVersion"
-    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.roomVersion"
-    implementation "android.arch.persistence.room:rxjava2:$rootProject.roomVersion"
     //    Network
     implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
     implementation "com.squareup.retrofit2:retrofit:$rootProject.retrofitVersion"

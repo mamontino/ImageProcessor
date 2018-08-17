@@ -12,12 +12,10 @@ import javax.inject.Singleton;
 @Singleton
 public class IPViewModelFactory implements ViewModelProvider.Factory {
 
-    private final Map<Class<? extends ViewModel>,
-            Provider<ViewModel>> viewModels;
+    private final Map<Class<? extends ViewModel>, Provider<ViewModel>> viewModels;
 
     @Inject
-    IPViewModelFactory(Map<Class<? extends ViewModel>,
-            Provider<ViewModel>> viewModels) {
+    IPViewModelFactory(Map<Class<? extends ViewModel>, Provider<ViewModel>> viewModels) {
         this.viewModels = viewModels;
     }
 

@@ -6,5 +6,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Response;
 
 public interface NetworkHelper {
+
     Observable<Response<ResponseBody>> getImageFromUrl(String url);
 }

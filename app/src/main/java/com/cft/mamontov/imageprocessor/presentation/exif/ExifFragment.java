@@ -18,7 +18,6 @@ import java.io.IOException;
 
 public class ExifFragment extends DialogFragment {
 
-    public static final String TAG = "ExifFragment";
     public static final String EXTRA_EXIF_URI = "EXTRA_EXIF_URI";
 
     private FragmentExifBinding mBinding;
@@ -42,8 +41,7 @@ public class ExifFragment extends DialogFragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_exif, container, false);
         initViews();
         return mBinding.getRoot();

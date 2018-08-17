@@ -137,10 +137,7 @@ public class LoadingService extends DaggerIntentService {
     }
 
     private void onSuccess(File file) {
-//        BitmapUtils.addPhotoToGallery(file.getAbsolutePath(), this);
-        BitmapUtils.insertImage(getContentResolver(),
-                BitmapUtils.getBitmap(file.getAbsolutePath()),
-                AppConstants.APP_NAME, AppConstants.APP_NAME);
+        BitmapUtils.addPhotoToGallery(file.getAbsolutePath(), this);
         onDownloadComplete(file.getAbsolutePath());
     }
 

@@ -30,7 +30,6 @@ public class UpdateProgressInterceptor implements Interceptor{
                     mRxBus.send(new ProgressEvent("completed", 100,
                             false, false));
                 }
-                System.out.println("completed");
             } else {
                 if (firstUpdate) {
                     firstUpdate = false;
@@ -39,7 +38,6 @@ public class UpdateProgressInterceptor implements Interceptor{
                             mRxBus.send(new ProgressEvent("content-length: unknown",
                                     100, false, true));
                         }
-                        System.out.println("content-length: unknown");
                     }
                 }
 
@@ -50,7 +48,6 @@ public class UpdateProgressInterceptor implements Interceptor{
                         mRxBus.send(new ProgressEvent("update",
                                 ((100 * bytesRead) / contentLength), true, false));
                     }
-                    System.out.format("%d%% done\n", (100 * bytesRead) / contentLength);
                 }
             }
         }

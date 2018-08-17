@@ -2,24 +2,24 @@ package com.cft.mamontov.imageprocessor.utils.events;
 
 public class ProgressEvent {
 
-    private final String message;
-    private final long progress;
+    private final String mMessage;
+    private final long mProgress;
     private final boolean showing;
     private final boolean error;
 
     public ProgressEvent(String message, long progress, boolean showing, boolean error) {
-        this.message = message;
-        this.progress = progress;
+        this.mMessage = message;
+        this.mProgress = progress;
         this.showing = showing;
         this.error = error;
     }
 
     public String getMessage() {
-        return message;
+        return mMessage;
     }
 
     public long getProgress() {
-        return progress;
+        return mProgress;
     }
 
     public boolean isShowing() {
